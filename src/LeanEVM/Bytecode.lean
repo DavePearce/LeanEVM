@@ -11,18 +11,19 @@ def eval_stop (_: EVM) : Outcome :=
 
 def eval_add (evm: EVM) : Outcome :=
   match evm.stack with
-  | [l,r]++rest => let v : u256 := Fin.add l r; Ok { stack := [v] ++ rest }
-  | _ => Error StackUnderflow
+  | l::r::rest => let v : u256 := Fin.add l r; Ok { stack := v::rest }
+  | [_] => Error StackUnderflow
+  | [] => Error StackUnderflow
 
 def eval_pop (evm: EVM) : Outcome :=
   match evm.stack with
-  | [_]++rest => Ok { stack := rest }
-  | _ => Error StackUnderflow
+  | _::rest => Ok { stack := rest }
+  | [] => Error StackUnderflow
 
 def eval_dup (evm: EVM) : Outcome :=
   match evm.stack with
-  | [l]++rest => Ok { stack := [l] ++ rest }
-  | _ => Error StackUnderflow
+  | l::rest => Ok { stack := l::l::rest }
+  | [] => Error StackUnderflow
 
 -- Execute a given bytecodes from a given state.
 def eval (evm: EVM) : Bytecode -> Outcome
@@ -32,22 +33,37 @@ def eval (evm: EVM) : Bytecode -> Outcome
 | Bytecode.DUP => eval_dup evm
 
 -- Execute a sequence of zero or more bytecodes from a given state.
-def eval_all (codes: List Bytecode)(st: Outcome) : Outcome :=
-  match (st,codes) with
-  | (Error _err, _) => st
-  | (Done _gas _data, _) => st
-  | (Ok evm, [code]++rest) => eval_all rest (eval evm code)
-  | (Ok evm, []) => st
-  decreasing_by
-    simp_wf
-    sorry
+def eval_all (code: List Bytecode)(evm:EVM) : Outcome :=
+  reduce code (Ok evm)
+where
+   reduce : (List Bytecode) -> Outcome -> Outcome
+    | _,(Error err) => Error err
+    | _,(Done gas data) => Done gas data
+    | [],(Ok evm) => Ok evm
+    | code::rest,(Ok evm) => reduce rest (eval evm code)
 
 /- =============================================================== -/
 /- Tests -/
 /- =============================================================== -/
 
 -- Executing STOP on an arbitrary EVM produces Done.
-example (evm:EVM) : (eval_all [STOP] (Ok evm)) = (Done 0 Array.empty) :=
+example (evm:EVM) : (eval_all [STOP] evm) = (Done 0 Array.empty) :=
 by
-  simp_wf
-  sorry
+  rfl
+
+-- Executing ADD on an empty EVM produces a stack overflow.
+example : (eval_all [ADD] EmptyEVM) = (Error StackUnderflow) :=
+by
+  unfold eval_all eval_all.reduce eval_all.reduce
+  unfold eval eval_add
+  unfold EmptyEVM
+  simp
+
+
+
+
+
+
+
+
+
