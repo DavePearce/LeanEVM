@@ -7,6 +7,7 @@ import LeanEVM.Util
 inductive Bytecode where
 | STOP
 | ADD
+| PUSH(n:u256)
 | POP
 | DUP
 
