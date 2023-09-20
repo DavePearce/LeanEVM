@@ -1,3 +1,5 @@
+import Mathlib.Tactic.Linarith
+
 /- =============================================================== -/
 /- Constants -/
 /- =============================================================== -/
@@ -13,3 +15,13 @@ def u256 := Fin TWO_256
 
 def u256.add (i:u256)(j: u256) : u256 :=
   Fin.add i j
+
+/- =============================================================== -/
+/- Helpers -/
+/- =============================================================== -/
+
+-- Simple proof relating the size of a list to its structure.
+def len_succ {a:Type} (h:a)(t:List a) : (h::t).length = t.length+1  :=
+by
+  induction t
+  repeat simp

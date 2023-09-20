@@ -95,10 +95,14 @@ by
   simp
 
 -- Executing ADD on Evm with two operands succeeds.
-example (st:List u256): exists evm, (eval_all [Add] {stack:=l::r::st}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval_all [Add] {stack:=l::r::rest}) = (Ok evm) :=
 by
-  exists {stack := (Fin.add l r)::st}
-  sorry
+  exists {stack := (Fin.add l r)::rest}
+  simp [*,ADD]
+  unfold EvmStack.pop EvmStack.pop EvmStack.pop
+  match rest with
+  | h::t => simp; unfold u256.add; rfl
+  | [] => simp; unfold u256.add; rfl
 
 -- Executing POP on Evm with at least one operand succeeds.
 example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=

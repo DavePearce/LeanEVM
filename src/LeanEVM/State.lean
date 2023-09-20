@@ -17,38 +17,18 @@ inductive Bytecode where
 /- =============================================================== -/
 def EvmStack := List u256
 
--- Pop exactly one item of the EVM stack
-@[simp] def EvmStack.pop1 (this:EvmStack)(_:this.length > 0) : EvmStack :=
-  match this with
-  | _::t => t
-
--- Simple lemma which states that the length of the stack after popping an item
--- has decreased by one.
-def EvmStack.pop1_len (st:EvmStack)(r:st.length > 0) : st.length = (st.pop1 r).length + 1 :=
-by
-  match st with
-  | _::t => simp
-
--- Unsure why this is needed exactly
-def Nat.succ_ge {m:Nat}{n:Nat} (h:m + 1 >= n) : (n-1 <= m) :=
-by
-  rw [Nat.sub_le_iff_le_add]
-  exact h
-
 -- Pop an item of the EVM stack
-def EvmStack.pop (this:EvmStack)(n:Nat)(r:this.length >= n) : EvmStack :=
-  if p:n >= 1
-  then
-    let st := this.pop1 (by linarith);
-    have w : this.length = st.length + 1 := (by apply pop1_len);
-    have q : st.length + 1 >= n := (by linarith);
-    EvmStack.pop st (n-1) (by apply Nat.succ_ge; exact q)
-  else
-    this
-  decreasing_by
-    simp_wf
-    apply Nat.sub_lt_of_pos_le
-    repeat simp [p]
+@[simp] def EvmStack.pop (st:EvmStack)(n:Nat)(r:n <= st.length) : EvmStack :=
+  match st with
+  | h::t =>
+      if n == 0 then st
+      else
+        EvmStack.pop t (n-1) (by
+        rw [Nat.sub_le_iff_le_add]
+        rw [<- len_succ h t]
+        exact r
+  )
+  | [] => []
 
 -- Push an item onto the EVM stack
 @[simp] def EvmStack.push (st:EvmStack)(n:u256) : EvmStack :=
@@ -65,7 +45,7 @@ def EvmStack.pop (this:EvmStack)(n:Nat)(r:this.length >= n) : EvmStack :=
 structure Evm where
   stack: EvmStack
 
-@[simp] def Evm.pop (evm:Evm)(n:Nat)(r:evm.stack.length >= n) : Evm :=
+@[simp] def Evm.pop (evm:Evm)(n:Nat)(r:n <= evm.stack.length) : Evm :=
   {stack := evm.stack.pop n r}
 
 @[simp] def Evm.push (evm:Evm)(n:u256) : Evm :=
