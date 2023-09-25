@@ -1,4 +1,4 @@
-import LeanEVM.Evm
+import LeanEVM.State
 import LeanEVM.Bytecode
 
 /- =============================================================== -/
