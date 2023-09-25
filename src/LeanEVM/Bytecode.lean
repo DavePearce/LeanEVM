@@ -107,14 +107,17 @@ by
 -- Executing POP on Evm with at least one operand succeeds.
 example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
 by
-  simp [p]
-  sorry
+  simp [p,POP]
+  match rest with
+  | h::t => simp
+  | [] => simp
 
 -- Executing PUSH then POP on an Evm is a no-op.
 example (evm:Evm): (eval_all [Push n,Pop] evm) = Ok evm :=
 by
-  simp [Evm.push, EvmStack.push, eval_all.reduce, POP]
-  sorry
+  match evm with
+  | {stack:=h::t} => simp
+  | {stack:=[]} => simp
 
 -- Executing PUSH, PUSH, ADD on an Evm always succeeds.
 example (evm:Evm): ∃nevm, (eval_all [Push N, Push m, Add] evm) = Ok nevm :=
