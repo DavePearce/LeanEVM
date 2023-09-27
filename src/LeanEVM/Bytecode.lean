@@ -10,10 +10,12 @@ open Outcome
 -- ==================================================================
 
 -- Halt the machine without any return data
+@[simp]
 def STOP (_: Evm) : Outcome :=
   Done 0 Array.empty
 
 -- Unsigned integer addition with modulo arithmetic
+@[simp]
 def ADD (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
@@ -32,6 +34,7 @@ def ADD (evm: Evm) : Outcome :=
 -- ==================================================================
 
 -- Pop word from stack
+@[simp]
 def POP (evm: Evm) : Outcome :=
   if r:evm.stack.length > 0
   then
@@ -43,6 +46,7 @@ def POP (evm: Evm) : Outcome :=
 -- 60s & 70s: Push Operations
 -- ==================================================================
 
+@[simp]
 def PUSH (evm: Evm)(n:u256) : Outcome :=
   Ok (evm.push n)
 
@@ -50,10 +54,11 @@ def PUSH (evm: Evm)(n:u256) : Outcome :=
 -- 80s: Duplication Operations
 -- ==================================================================
 
-def DUP (evm: Evm) : Outcome :=
-  if r:evm.stack.length > 0
+@[simp]
+def DUP (evm: Evm)(n:u4) : Outcome :=
+  if r:evm.stack.length > n.val
   then
-    let val : u256 := evm.peek 0 (by simp [r]);
+    let val : u256 := evm.peek n.val (by simp [r]);
     Ok (evm.push val)
   else
     Error StackUnderflow
@@ -63,15 +68,17 @@ def DUP (evm: Evm) : Outcome :=
 -- ==================================================================
 
 -- Execute a given bytecodes from a given state.
-@[simp] def eval (evm: Evm) : Bytecode -> Outcome
+@[simp]
+def eval (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Stop => STOP evm
 | Bytecode.Add => ADD evm
 | Bytecode.Pop => POP evm
-| Bytecode.Dup => DUP evm
+| Bytecode.Dup n => DUP evm n
 | Bytecode.Push n => PUSH evm n
 
 -- Execute a sequence of zero or more bytecodes from a given state.
-@[simp] def eval_all (code: List Bytecode)(evm:Evm) : Outcome :=
+@[simp]
+def eval_all (code: List Bytecode)(evm:Evm) : Outcome :=
   reduce code (Ok evm)
 where
    @[simp] reduce : (List Bytecode) -> Outcome -> Outcome
@@ -98,7 +105,7 @@ by
 example (rest:List u256): exists evm, (eval_all [Add] {stack:=l::r::rest}) = (Ok evm) :=
 by
   exists {stack := (Fin.add l r)::rest}
-  simp [*,ADD]
+  simp [*]
   unfold EvmStack.pop EvmStack.pop EvmStack.pop
   match rest with
   | h::t => simp; unfold u256.add; rfl
@@ -107,7 +114,7 @@ by
 -- Executing POP on Evm with at least one operand succeeds.
 example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
 by
-  simp [p,POP]
+  simp [p]
   match rest with
   | h::t => simp
   | [] => simp
@@ -120,10 +127,29 @@ by
   | {stack:=[]} => simp
 
 -- Executing PUSH, PUSH, ADD on an Evm always succeeds.
-example (evm:Evm): ∃nevm, (eval_all [Push N, Push m, Add] evm) = Ok nevm :=
+example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
-  sorry
+
+-- Executing DUP0 has the right effect
+example (evm:Evm): ∃evm', (eval_all [Push n, Dup_0] evm) = (Ok evm') :=
+by
+  exists {stack := n::n::evm.stack}
+  simp [*]
+
+-- Executing DUP1 has the right effect
+example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Dup_1] evm) = (Ok evm') :=
+by
+  exists {stack := n::m::n::evm.stack}
+  simp [*]
+
+-- Executing DUP2 has the right effect
+example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Push l, Dup_2] evm) = (Ok evm') :=
+by
+  exists {stack := n::l::m::n::evm.stack}
+  -- Unnecessary?
+  have p : 2 < Nat.succ (Nat.succ (Nat.succ (List.length evm.stack))) := by linarith
+  simp [*]
 
 -- def list_dec (l:List u256)(p:l.length > 0) : ∃ h t, l = h::t :=
 -- by
