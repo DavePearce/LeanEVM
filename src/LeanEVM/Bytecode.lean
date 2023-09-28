@@ -29,6 +29,52 @@ def ADD (evm: Evm) : Outcome :=
   else
     Error StackUnderflow
 
+-- Unsigned integer subtraction with modulo arithmetic
+@[simp]
+def SUB (evm: Evm) : Outcome :=
+  if r:evm.stack.length > 1
+  then
+    let lhs : u256 := evm.peek 0 (by linarith);
+    let rhs : u256 := evm.peek 1 (by simp [r]);
+    let res : u256 := (u256.sub lhs rhs);
+    -- Take operands off stack
+    let evm' := evm.pop 2 r;
+    -- Push result on stack
+    Ok (evm'.push res)
+  else
+    Error StackUnderflow    
+
+-- Unsigned integer multiplication with modulo arithmetic
+@[simp]
+def MUL (evm: Evm) : Outcome :=
+  if r:evm.stack.length > 1
+  then
+    let lhs : u256 := evm.peek 0 (by linarith);
+    let rhs : u256 := evm.peek 1 (by simp [r]);
+    let res : u256 := (u256.mul lhs rhs);
+    -- Take operands off stack
+    let evm' := evm.pop 2 r;
+    -- Push result on stack
+    Ok (evm'.push res)
+  else
+    Error StackUnderflow  
+
+-- Unsigned integer division with modulo arithmetic
+@[simp]
+def DIV (evm: Evm) : Outcome :=
+  if r:evm.stack.length > 1
+  then
+    let lhs : u256 := evm.peek 0 (by linarith);
+    let rhs : u256 := evm.peek 1 (by simp [r]);
+    let res : u256 := (u256.div lhs rhs);
+    -- Take operands off stack
+    let evm' := evm.pop 2 r;
+    -- Push result on stack
+    Ok (evm'.push res)
+  else
+    Error StackUnderflow  
+
+
 -- ==================================================================
 -- 50s: Stack, Memory Storage and Flow Operations
 -- ==================================================================
@@ -72,6 +118,9 @@ def DUP (evm: Evm)(n:u4) : Outcome :=
 def eval (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Stop => STOP evm
 | Bytecode.Add => ADD evm
+| Bytecode.Sub => SUB evm
+| Bytecode.Mul => MUL evm
+| Bytecode.Div => DIV evm
 | Bytecode.Pop => POP evm
 | Bytecode.Dup n => DUP evm n
 | Bytecode.Push n => PUSH evm n
@@ -105,11 +154,42 @@ by
 example (rest:List u256): exists evm, (eval_all [Add] {stack:=l::r::rest}) = (Ok evm) :=
 by
   exists {stack := (Fin.add l r)::rest}
-  simp [*]
-  unfold EvmStack.pop EvmStack.pop EvmStack.pop
   match rest with
   | h::t => simp; unfold u256.add; rfl
   | [] => simp; unfold u256.add; rfl
+
+-- Test 0-1 = MAX
+example (rest:List u256): exists evm, (eval_all [Sub] {stack:=U256_0::U256_1::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_MAX::rest}
+  match rest with
+  | h::t => simp; unfold u256.sub; rfl
+  | [] => simp; unfold u256.sub; rfl
+
+-- Test 3-1 = 2
+example (rest:List u256): exists evm, (eval_all [Sub] {stack:=U256_3::U256_2::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_1::rest}
+  match rest with
+  | h::t => simp; unfold u256.sub; rfl
+  | [] => simp; unfold u256.sub; rfl  
+
+-- Test 1*2 = 2
+example (rest:List u256): exists evm, (eval_all [Mul] {stack:=U256_1::U256_2::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_2::rest}
+  match rest with
+  | h::t => simp; unfold u256.mul; rfl
+  | [] => simp; unfold u256.mul; rfl
+
+-- Test 2*2 = 4
+example (rest:List u256): exists evm, (eval_all [Mul] {stack:=U256_2::U256_2::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_4::rest}
+  match rest with
+  | h::t => simp; unfold u256.mul; rfl
+  | [] => simp; unfold u256.mul; rfl
+
 
 -- Executing POP on Evm with at least one operand succeeds.
 example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
