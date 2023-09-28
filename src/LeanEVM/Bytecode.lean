@@ -74,7 +74,6 @@ def DIV (evm: Evm) : Outcome :=
   else
     Error StackUnderflow  
 
-
 -- ==================================================================
 -- 50s: Stack, Memory Storage and Flow Operations
 -- ==================================================================
@@ -115,7 +114,7 @@ def DUP (evm: Evm)(n:u4) : Outcome :=
 
 -- Execute a given bytecodes from a given state.
 @[simp]
-def eval (evm: Evm) : Bytecode -> Outcome
+def dispatch (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Stop => STOP evm
 | Bytecode.Add => ADD evm
 | Bytecode.Sub => SUB evm
@@ -127,31 +126,31 @@ def eval (evm: Evm) : Bytecode -> Outcome
 
 -- Execute a sequence of zero or more bytecodes from a given state.
 @[simp]
-def eval_all (code: List Bytecode)(evm:Evm) : Outcome :=
+def eval (code: List Bytecode)(evm:Evm) : Outcome :=
   reduce code (Ok evm)
 where
    @[simp] reduce : (List Bytecode) -> Outcome -> Outcome
     | _,(Error err) => Error err
     | _,(Done gas data) => Done gas data
     | [], o => o
-    | code::rest,(Ok evm) => reduce rest (eval evm code)
+    | code::rest,(Ok evm) => reduce rest (dispatch evm code)
 
 /- =============================================================== -/
 /- Tests -/
 /- =============================================================== -/
 
 -- Executing STOP on an arbitrary Evm produces Done.
-example (evm:Evm) : (eval_all [Stop] evm) = (Done 0 Array.empty) :=
+example (evm:Evm) : (eval [Stop] evm) = (Done 0 Array.empty) :=
 by
   rfl
 
 -- Executing ADD on an empty Evm produces a stack overflow.
-example : (eval_all [Add] EmptyEvm) = (Error StackUnderflow) :=
+example : (eval [Add] EmptyEvm) = (Error StackUnderflow) :=
 by
   simp
 
 -- Executing ADD on Evm with two operands succeeds.
-example (rest:List u256): exists evm, (eval_all [Add] {stack:=l::r::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Add] {stack:=l::r::rest}) = (Ok evm) :=
 by
   exists {stack := (Fin.add l r)::rest}
   match rest with
@@ -159,7 +158,7 @@ by
   | [] => simp; unfold u256.add; rfl
 
 -- Test 0-1 = MAX
-example (rest:List u256): exists evm, (eval_all [Sub] {stack:=U256_0::U256_1::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Sub] {stack:=U256_0::U256_1::rest}) = (Ok evm) :=
 by
   exists {stack := U256_MAX::rest}
   match rest with
@@ -167,7 +166,7 @@ by
   | [] => simp; unfold u256.sub; rfl
 
 -- Test 3-1 = 2
-example (rest:List u256): exists evm, (eval_all [Sub] {stack:=U256_3::U256_2::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Sub] {stack:=U256_3::U256_2::rest}) = (Ok evm) :=
 by
   exists {stack := U256_1::rest}
   match rest with
@@ -175,7 +174,7 @@ by
   | [] => simp; unfold u256.sub; rfl  
 
 -- Test 1*2 = 2
-example (rest:List u256): exists evm, (eval_all [Mul] {stack:=U256_1::U256_2::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Mul] {stack:=U256_1::U256_2::rest}) = (Ok evm) :=
 by
   exists {stack := U256_2::rest}
   match rest with
@@ -183,7 +182,7 @@ by
   | [] => simp; unfold u256.mul; rfl
 
 -- Test 2*2 = 4
-example (rest:List u256): exists evm, (eval_all [Mul] {stack:=U256_2::U256_2::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Mul] {stack:=U256_2::U256_2::rest}) = (Ok evm) :=
 by
   exists {stack := U256_4::rest}
   match rest with
@@ -191,7 +190,7 @@ by
   | [] => simp; unfold u256.mul; rfl
 
 -- Test 4/2 = 2
-example (rest:List u256): exists evm, (eval_all [Div] {stack:=U256_4::U256_2::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Div] {stack:=U256_4::U256_2::rest}) = (Ok evm) :=
 by
   exists {stack := U256_2::rest}
   match rest with
@@ -199,7 +198,7 @@ by
   | [] => simp; unfold u256.div; rfl
 
 -- Test 1/0 = 0
-example (rest:List u256): exists evm, (eval_all [Div] {stack:=U256_1::U256_0::rest}) = (Ok evm) :=
+example (rest:List u256): exists evm, (eval [Div] {stack:=U256_1::U256_0::rest}) = (Ok evm) :=
 by
   exists {stack := U256_0::rest}
   match rest with
@@ -208,7 +207,7 @@ by
 
 
 -- Executing POP on Evm with at least one operand succeeds.
-example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
+example (st:List u256)(p:st = v::rest): (eval [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
 by
   simp [p]
   match rest with
@@ -216,31 +215,31 @@ by
   | [] => simp
 
 -- Executing PUSH then POP on an Evm is a no-op.
-example (evm:Evm): (eval_all [Push n,Pop] evm) = Ok evm :=
+example (evm:Evm): (eval [Push n,Pop] evm) = Ok evm :=
 by
   match evm with
   | {stack:=h::t} => simp
   | {stack:=[]} => simp
 
 -- Executing PUSH, PUSH, ADD on an Evm always succeeds.
-example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Add] evm) = Ok evm' :=
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
 
 -- Executing DUP0 has the right effect
-example (evm:Evm): ∃evm', (eval_all [Push n, Dup_0] evm) = (Ok evm') :=
+example (evm:Evm): ∃evm', (eval [Push n, Dup_0] evm) = (Ok evm') :=
 by
   exists {stack := n::n::evm.stack}
   simp [*]
 
 -- Executing DUP1 has the right effect
-example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Dup_1] evm) = (Ok evm') :=
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Dup_1] evm) = (Ok evm') :=
 by
   exists {stack := n::m::n::evm.stack}
   simp [*]
 
 -- Executing DUP2 has the right effect
-example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Push l, Dup_2] evm) = (Ok evm') :=
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Dup_2] evm) = (Ok evm') :=
 by
   exists {stack := n::l::m::n::evm.stack}
   simp [*]  
