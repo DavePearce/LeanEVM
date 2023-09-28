@@ -133,7 +133,7 @@ where
    @[simp] reduce : (List Bytecode) -> Outcome -> Outcome
     | _,(Error err) => Error err
     | _,(Done gas data) => Done gas data
-    | [],(Ok evm) => Ok evm
+    | [], o => o
     | code::rest,(Ok evm) => reduce rest (eval evm code)
 
 /- =============================================================== -/
@@ -190,6 +190,22 @@ by
   | h::t => simp; unfold u256.mul; rfl
   | [] => simp; unfold u256.mul; rfl
 
+-- Test 4/2 = 2
+example (rest:List u256): exists evm, (eval_all [Div] {stack:=U256_4::U256_2::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_2::rest}
+  match rest with
+  | h::t => simp; unfold u256.div; rfl
+  | [] => simp; unfold u256.div; rfl
+
+-- Test 1/0 = 0
+example (rest:List u256): exists evm, (eval_all [Div] {stack:=U256_1::U256_0::rest}) = (Ok evm) :=
+by
+  exists {stack := U256_0::rest}
+  match rest with
+  | h::t => simp; unfold u256.div; rfl
+  | [] => simp; unfold u256.div; rfl
+
 
 -- Executing POP on Evm with at least one operand succeeds.
 example (st:List u256)(p:st = v::rest): (eval_all [Pop] {stack:=st}) = (Ok {stack:=rest}) :=
@@ -227,12 +243,5 @@ by
 example (evm:Evm): ∃evm', (eval_all [Push n, Push m, Push l, Dup_2] evm) = (Ok evm') :=
 by
   exists {stack := n::l::m::n::evm.stack}
-  -- Unnecessary?
-  have p : 2 < Nat.succ (Nat.succ (Nat.succ (List.length evm.stack))) := by linarith
-  simp [*]
-
--- def list_dec (l:List u256)(p:l.length > 0) : ∃ h t, l = h::t :=
--- by
---   match l with
---   | h::t => exists h,t
---   | [] => contradiction
+  simp [*]  
+  simp_arith
