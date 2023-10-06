@@ -90,6 +90,7 @@ structure Evm where
 @[simp] def Evm.peek (evm:Evm)(n:Nat)(r:n < evm.stack.length) : u256 :=
   evm.stack.peek { val:= n, isLt := r}
 
+
 def EmptyEvm : Evm := {stack:=[]}
 
 /- =============================================================== -/
@@ -104,3 +105,9 @@ inductive Outcome where
 | Ok(evm: Evm)
 | Done (gas: Nat)(data: Array u8)
 | Error (err: Exception)
+
+-- Map an outcome over a transition function.
+@[simp] def Outcome.apply (out:Outcome)(fn:Evm->Outcome) : Outcome :=
+  match out with
+  | Outcome.Ok evm => (fn evm)
+  | _ => out
