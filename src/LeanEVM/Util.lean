@@ -5,7 +5,26 @@ import Mathlib.Tactic.Linarith
 /- =============================================================== -/
 
 def u4 := Fin 16
+
+/- =============================================================== -/
+/- U8 -/
+/- =============================================================== -/
+
 def u8 := Fin 256
+
+def from_bytes_be(bytes:Array u8)(i: Fin bytes.size) : Nat := 
+  -- Read ith byte
+  let b : u8 := (bytes.get i);
+  -- Decide what to do
+  if i.val == 0 then b.val
+  else
+    -- Calculate i-1
+    let im1 : Fin bytes.size := {val:=i-1,isLt:=(by sorry)};
+    (256 * (from_bytes_be bytes im1)) + b.val
+  decreasing_by
+    sorry
+
+opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
 
 /- =============================================================== -/
 /- U256 -/
@@ -14,6 +33,11 @@ def u8 := Fin 256
 def TWO_256 := 0x10000000000000000000000000000000000000000000000000000000000000000
 
 def u256 := Fin TWO_256
+    
+def u256.from_bytes(bytes:Array u8) : u256 := 
+  if bytes.size == 0 then {val:=0, isLt:=(by simp)}
+  else
+    sorry  
 
 def u256.add (i:u256)(j: u256) : u256 :=
   Fin.add i j
