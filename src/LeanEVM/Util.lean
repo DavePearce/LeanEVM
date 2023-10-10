@@ -12,17 +12,23 @@ def u4 := Fin 16
 
 def u8 := Fin 256
 
+-- Construct a natural number from a sequence of one or more bytes.
 def from_bytes_be(bytes:Array u8)(i: Fin bytes.size) : Nat := 
   -- Read ith byte
   let b : u8 := (bytes.get i);
   -- Decide what to do
-  if i.val == 0 then b.val
+  if r:i.val = 0 then b.val
   else
-    -- Calculate i-1
-    let im1 : Fin bytes.size := {val:=i-1,isLt:=(by sorry)};
+    -- Construct i-1
+    let im1 : Fin bytes.size := {val:=i.val-1,isLt:=(
+      by 
+        have p : i.val-1 < i.val := (Nat.pred_lt r);
+        linarith [i.isLt])
+    };
+    -- Done
     (256 * (from_bytes_be bytes im1)) + b.val
-  decreasing_by
-    sorry
+  termination_by
+    from_bytes_be _ i => (i.val)  
 
 opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
 
