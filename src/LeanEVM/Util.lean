@@ -1,4 +1,11 @@
 import Mathlib.Tactic.Linarith
+import LeanEVM.Byte
+
+def Nat.zero_lt (n:Nat)(p:n ≠ 0) : 0 < n :=
+by
+  match n with
+  | Nat.zero => contradiction
+  | Nat.succ m => simp
 
 /- =============================================================== -/
 /- Constants -/
@@ -11,25 +18,6 @@ def u4 := Fin 16
 /- =============================================================== -/
 
 def u8 := Fin 256
-
--- Construct a natural number from a sequence of one or more bytes.
-def from_bytes_be(bytes:Array u8)(i: Fin bytes.size) : Nat := 
-  -- Read ith byte
-  let b : u8 := (bytes.get i);
-  -- Decide what to do
-  if r:i.val = 0 then b.val
-  else
-    -- Construct i-1
-    let im1 : Fin bytes.size := {val:=i.val-1,isLt:=(
-      by 
-        have p : i.val-1 < i.val := (Nat.pred_lt r);
-        linarith [i.isLt])
-    };
-    -- Done
-    (256 * (from_bytes_be bytes im1)) + b.val
-  termination_by
-    from_bytes_be _ i => (i.val)  
-
 opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
 
 /- =============================================================== -/
@@ -38,12 +26,19 @@ opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
 
 def TWO_256 := 0x10000000000000000000000000000000000000000000000000000000000000000
 
-def u256 := Fin TWO_256
-    
-def u256.from_bytes(bytes:Array u8) : u256 := 
-  if bytes.size == 0 then {val:=0, isLt:=(by simp)}
+def u256 := Fin TWO_256    
+
+def u256.from_bytes(bytes:Array u8) : u256 :=
+  let len : Nat := bytes.data.length;
+  -- Check for base case
+  if p:len <= 0 then Fin.ofNat 0
   else
-    sorry  
+    -- Construct starting index (i.e. zero)
+    let i : (Fin len) := {val:=0,isLt:=(by linarith)};
+    -- Convert bytes into nat
+    let n := from_bytes_be bytes.data i;
+    -- Convert nat into u256
+    Fin.ofNat n
 
 def u256.add (i:u256)(j: u256) : u256 :=
   Fin.add i j
