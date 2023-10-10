@@ -33,4 +33,8 @@ by
   rw [q]
   rw [<-z]
   simp_all
-  sorry  
+  rfl
+
+example (n:Nat): #[n][0] = n := 
+by
+  rfl

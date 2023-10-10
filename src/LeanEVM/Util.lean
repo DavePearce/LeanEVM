@@ -68,3 +68,17 @@ def len_succ {a:Type} (h:a)(t:List a) : (h::t).length = t.length+1  :=
 by
   induction t
   repeat simp
+
+/- =============================================================== -/
+/- Tests -/
+/- =============================================================== -/
+
+-- Simple demonstration that a singleton byte array returns its only byte as the
+-- result.
+example (n:byte)(m:u256)(p:n.val=m.val): (u256.from_bytes #[n]) = m :=
+by 
+  unfold u256.from_bytes
+  simp
+  unfold from_bytes_be
+  simp  
+  sorry  
