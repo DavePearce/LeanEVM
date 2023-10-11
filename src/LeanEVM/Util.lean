@@ -1,11 +1,6 @@
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LibrarySearch
 import LeanEVM.Byte
-
-def Nat.zero_lt (n:Nat)(p:n ≠ 0) : 0 < n :=
-by
-  match n with
-  | Nat.zero => contradiction
-  | Nat.succ m => simp
 
 /- =============================================================== -/
 /- Constants -/
@@ -31,8 +26,9 @@ def u256 := Fin TWO_256
 def u256.from_bytes(bytes:Array u8) : u256 :=
   let len : Nat := bytes.data.length;
   -- Check for base case
-  if p:len <= 0 then Fin.ofNat 0
+  if p:len = 0 then Fin.ofNat 0
   else
+    have w : len > 0 := (by exact Nat.pos_of_ne_zero p);
     -- Construct starting index (i.e. zero)
     let i : (Fin len) := {val:=0,isLt:=(by linarith)};
     -- Convert bytes into nat
@@ -73,12 +69,19 @@ by
 /- Tests -/
 /- =============================================================== -/
 
+lemma fin_ofnat_lt (n:Nat)(m:Nat)(p:n<=m) : (Fin.ofNat (n:=m) n).val = n :=
+by
+  unfold Fin.ofNat
+  have p: n % (m+1) = n := by sorry;
+  simp [*]
+
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.
-example (n:byte)(m:u256)(p:n.val=m.val): (u256.from_bytes #[n]) = m :=
+example (n:byte)(m:u256)(p:n.val=m.val): (u256.from_bytes #[n]).val = m.val :=
 by 
-  unfold u256.from_bytes
+  unfold u256.from_bytes  
   simp
-  unfold from_bytes_be
-  simp  
-  sorry  
+  unfold from_bytes_be  
+  rw [<-p]
+  have q : n.val <= U256_MAX.val := (by sorry);
+  exact fin_ofnat_lt n.val U256_MAX.val q

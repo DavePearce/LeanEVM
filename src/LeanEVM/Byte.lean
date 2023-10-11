@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LibrarySearch
 
 def byte := Fin 256
 
@@ -24,17 +25,8 @@ def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat :=
 -- Prove that converting an array consisting of a single byte generates the
 -- corresponding Nat.
 example (n:byte)(i:Fin 1): (from_bytes_be [n] i) = n.val :=
-by 
-  let arr := [n];
+by
   unfold from_bytes_be
   have p:i={val:=0,isLt:=(by simp)} := (by simp);  
-  have q:i=0 := by sorry;
-  have z:arr[0]=n := by sorry;
-  rw [q]
-  rw [<-z]
-  simp_all
-  rfl
-
-example (n:Nat): #[n][0] = n := 
-by
+  simp [*]
   rfl
