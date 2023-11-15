@@ -23,6 +23,7 @@ def dispatch (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Pop => POP evm
 | Bytecode.Dup n => DUP evm n
 | Bytecode.Push bs => PUSH evm bs
+| Bytecode.Swap n => SWAP evm n
 | Bytecode.Invalid => Error InvalidOpcode
 
 -- Execute a sequence of zero or more bytecodes from a given state.
