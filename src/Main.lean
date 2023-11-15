@@ -1,5 +1,4 @@
 import LeanEVM.State
-import LeanEVM.Bytecode
 
 /- =============================================================== -/
 /- Main -/

@@ -51,21 +51,21 @@ example (evm:Evm): ∃evm', (eval [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
 
--- Executing DUP0 has the right effect
-example (evm:Evm): ∃evm', (eval [Push n, Dup_0] evm) = (Ok evm') :=
+-- Executing DUP1 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Dup_1] evm) = (Ok evm') :=
 by
   exists {stack := n::n::evm.stack}
   simp [*]
 
--- Executing DUP1 has the right effect
-example (evm:Evm): ∃evm', (eval [Push n, Push m, Dup_1] evm) = (Ok evm') :=
+-- Executing DUP2 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Dup_2] evm) = (Ok evm') :=
 by
   exists {stack := n::m::n::evm.stack}
   simp [*]
 
--- Executing DUP2 has the right effect
-example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Dup_2] evm) = (Ok evm') :=
+-- Executing DUP3 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Dup_3] evm) = (Ok evm') :=
 by
   exists {stack := n::l::m::n::evm.stack}
-  simp [*]  
+  simp [*]
   simp_arith
