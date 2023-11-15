@@ -77,3 +77,16 @@ by
   exists {stack := n::l::m::n::evm.stack}
   simp [*]
   simp_arith
+
+-- Executing SWAP1 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Swap_1] evm) = (Ok evm') :=
+by
+  exists {stack := n::m::evm.stack}
+  simp [List.set]
+
+-- Executing SWAP2 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Swap_2] evm) = (Ok evm') :=
+by
+  exists {stack := n::m::l::evm.stack}
+  simp [List.set,eval.reduce]
+  simp_arith

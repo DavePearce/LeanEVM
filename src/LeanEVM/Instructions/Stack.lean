@@ -94,14 +94,14 @@ def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp)}
 
 @[simp]
 def SWAP (evm: Evm)(n:u4) : Outcome :=
-  if r:evm.stack.length > n.val
+  if r:evm.stack.length > (n.val+1)
   then
     let v0 : u256 := evm.peek 0 (by linarith);
-    let vn : u256 := evm.peek n.val (by simp [r]);
+    let vn : u256 := evm.peek (n.val+1) (by simp [r]);
     -- Assign nth item to top position
     let evm' := evm.set 0 vn (by linarith);
     -- Assign top item to nth position
-    Ok (evm'.set n.val v0 (by simp [r]))
+    Ok (evm'.set (n.val+1) v0 (by simp [r]))
   else
     Error StackUnderflow
 
