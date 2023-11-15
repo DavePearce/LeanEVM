@@ -23,6 +23,7 @@ def dispatch (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Pop => POP evm
 | Bytecode.Dup n => DUP evm n
 | Bytecode.Push n => PUSH evm n
+| Bytecode.Swap n => SWAP evm n
 
 -- Execute a sequence of zero or more bytecodes from a given state.
 @[simp]
