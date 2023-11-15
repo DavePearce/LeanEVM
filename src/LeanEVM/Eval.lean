@@ -52,27 +52,27 @@ example (evm:Evm): ∃evm', (eval [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
 
--- Executing DUP0 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Dup_1] evm) = (Ok evm') :=
+-- Executing DUP1 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Dup_1] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   exists {stack := n::n::evm.stack}
   simp [*]
 
--- Executing DUP1 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Dup_2] evm) = (Ok evm') :=
+-- Executing DUP2 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Dup_2] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   let m := u256.from_bytes ms;
   exists {stack := n::m::n::evm.stack}
   simp [*]
 
--- Executing DUP2 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Push ls, Dup_3] evm) = (Ok evm') :=
+-- Executing DUP3 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Dup_3] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   let m := u256.from_bytes ms;
   let l := u256.from_bytes ls;
   exists {stack := n::l::m::n::evm.stack}
-  simp [*]  
+  simp [*]
   simp_arith

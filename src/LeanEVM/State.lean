@@ -23,6 +23,7 @@ inductive Bytecode where
 -- 80s: Duplication Operations
 | Dup(n:u4)
 -- 90s: Exchange Operations
+| Swap(n:u4)
 -- a0s: Logging Operations
 -- f0s: System operations
 | Invalid

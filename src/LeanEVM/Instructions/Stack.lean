@@ -54,3 +54,36 @@ def DUP (evm: Evm)(n:u4) : Outcome :=
     Ok (evm.push val)
   else
     Error StackUnderflow
+
+@[simp]
+def Dup_1 := Bytecode.Dup {val:=0, isLt:=(by simp)}
+@[simp]
+def Dup_2 := Bytecode.Dup {val:=1, isLt:=(by simp)}
+@[simp]
+def Dup_3 := Bytecode.Dup {val:=2, isLt:=(by simp)}
+@[simp]
+def Dup_4 := Bytecode.Dup {val:=3, isLt:=(by simp)}
+@[simp]
+def Dup_5 := Bytecode.Dup {val:=4, isLt:=(by simp)}
+@[simp]
+def Dup_6 := Bytecode.Dup {val:=5, isLt:=(by simp)}
+@[simp]
+def Dup_7 := Bytecode.Dup {val:=6, isLt:=(by simp)}
+@[simp]
+def Dup_8 := Bytecode.Dup {val:=7, isLt:=(by simp)}
+@[simp]
+def Dup_9 := Bytecode.Dup {val:=8, isLt:=(by simp)}
+@[simp]
+def Dup_10 := Bytecode.Dup {val:=9, isLt:=(by simp)}
+@[simp]
+def Dup_11 := Bytecode.Dup {val:=10, isLt:=(by simp)}
+@[simp]
+def Dup_12 := Bytecode.Dup {val:=11, isLt:=(by simp)}
+@[simp]
+def Dup_13 := Bytecode.Dup {val:=12, isLt:=(by simp)}
+@[simp]
+def Dup_14 := Bytecode.Dup {val:=13, isLt:=(by simp)}
+@[simp]
+def Dup_15 := Bytecode.Dup {val:=14, isLt:=(by simp)}
+@[simp]
+def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp)}
