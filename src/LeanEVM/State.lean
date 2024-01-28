@@ -23,6 +23,7 @@ inductive Bytecode where
 -- 80s: Duplication Operations
 | Dup(n:u4)
 -- 90s: Exchange Operations
+| Swap(n:u4)
 -- a0s: Logging Operations
 -- f0s: System operations
 | Invalid
@@ -164,6 +165,10 @@ def EvmStack := List u256
 @[simp] def EvmStack.peek (st:EvmStack)(i:Fin st.length) : u256 :=
   st.get i
 
+-- Assign an item v to the ith position in the EVM stack
+@[simp] def EvmStack.set (st:EvmStack)(n:u256)(i:Fin st.length) : EvmStack :=
+  List.set st i n
+
 /- =============================================================== -/
 /- Ethereum Virtual Machine -/
 /- =============================================================== -/
@@ -180,6 +185,8 @@ structure Evm where
 @[simp] def Evm.peek (evm:Evm)(n:Nat)(r:n < evm.stack.length) : u256 :=
   evm.stack.peek { val:= n, isLt := r}
 
+@[simp] def Evm.set (evm:Evm)(n:Nat)(v:u256)(r:n < evm.stack.length) : Evm :=
+  {stack:=evm.stack.set v { val:= n, isLt := r}}
 
 def EmptyEvm : Evm := {stack:=[]}
 

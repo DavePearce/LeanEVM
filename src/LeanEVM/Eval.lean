@@ -23,6 +23,7 @@ def dispatch (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Pop => POP evm
 | Bytecode.Dup n => DUP evm n
 | Bytecode.Push bs => PUSH evm bs
+| Bytecode.Swap n => SWAP evm n
 | Bytecode.Invalid => Error InvalidOpcode
 
 -- Execute a sequence of zero or more bytecodes from a given state.
@@ -52,27 +53,40 @@ example (evm:Evm): ∃evm', (eval [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
 
--- Executing DUP0 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Dup_1] evm) = (Ok evm') :=
+-- Executing DUP1 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Dup_1] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   exists {stack := n::n::evm.stack}
   simp [*]
 
--- Executing DUP1 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Dup_2] evm) = (Ok evm') :=
+-- Executing DUP2 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Dup_2] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   let m := u256.from_bytes ms;
   exists {stack := n::m::n::evm.stack}
   simp [*]
 
--- Executing DUP2 has the right effect
-example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Push ls, Dup_3] evm) = (Ok evm') :=
+-- Executing DUP3 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Dup_3] evm) = (Ok evm') :=
 by
   let n := u256.from_bytes ns;
   let m := u256.from_bytes ms;
   let l := u256.from_bytes ls;
   exists {stack := n::l::m::n::evm.stack}
-  simp [*]  
+  simp [*]
+  simp_arith
+
+-- Executing SWAP1 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Swap_1] evm) = (Ok evm') :=
+by
+  exists {stack := n::m::evm.stack}
+  simp [List.set]
+
+-- Executing SWAP2 has the right effect
+example (evm:Evm): ∃evm', (eval [Push n, Push m, Push l, Swap_2] evm) = (Ok evm') :=
+by
+  exists {stack := n::m::l::evm.stack}
+  simp [List.set,eval.reduce]
   simp_arith
