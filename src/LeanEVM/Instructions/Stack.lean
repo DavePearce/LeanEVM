@@ -56,37 +56,37 @@ def DUP (evm: Evm)(n:u4) : Outcome :=
     Error StackUnderflow
 
 @[simp]
-def Dup_1 := Bytecode.Dup {val:=0, isLt:=(by simp)}
+def Dup_1 := Bytecode.Dup {val:=0, isLt:=(by simp_arith)}
 @[simp]
-def Dup_2 := Bytecode.Dup {val:=1, isLt:=(by simp)}
+def Dup_2 := Bytecode.Dup {val:=1, isLt:=(by simp_arith)}
 @[simp]
-def Dup_3 := Bytecode.Dup {val:=2, isLt:=(by simp)}
+def Dup_3 := Bytecode.Dup {val:=2, isLt:=(by simp_arith)}
 @[simp]
-def Dup_4 := Bytecode.Dup {val:=3, isLt:=(by simp)}
+def Dup_4 := Bytecode.Dup {val:=3, isLt:=(by simp_arith)}
 @[simp]
-def Dup_5 := Bytecode.Dup {val:=4, isLt:=(by simp)}
+def Dup_5 := Bytecode.Dup {val:=4, isLt:=(by simp_arith)}
 @[simp]
-def Dup_6 := Bytecode.Dup {val:=5, isLt:=(by simp)}
+def Dup_6 := Bytecode.Dup {val:=5, isLt:=(by simp_arith)}
 @[simp]
-def Dup_7 := Bytecode.Dup {val:=6, isLt:=(by simp)}
+def Dup_7 := Bytecode.Dup {val:=6, isLt:=(by simp_arith)}
 @[simp]
-def Dup_8 := Bytecode.Dup {val:=7, isLt:=(by simp)}
+def Dup_8 := Bytecode.Dup {val:=7, isLt:=(by simp_arith)}
 @[simp]
-def Dup_9 := Bytecode.Dup {val:=8, isLt:=(by simp)}
+def Dup_9 := Bytecode.Dup {val:=8, isLt:=(by simp_arith)}
 @[simp]
-def Dup_10 := Bytecode.Dup {val:=9, isLt:=(by simp)}
+def Dup_10 := Bytecode.Dup {val:=9, isLt:=(by simp_arith)}
 @[simp]
-def Dup_11 := Bytecode.Dup {val:=10, isLt:=(by simp)}
+def Dup_11 := Bytecode.Dup {val:=10, isLt:=(by simp_arith)}
 @[simp]
-def Dup_12 := Bytecode.Dup {val:=11, isLt:=(by simp)}
+def Dup_12 := Bytecode.Dup {val:=11, isLt:=(by simp_arith)}
 @[simp]
-def Dup_13 := Bytecode.Dup {val:=12, isLt:=(by simp)}
+def Dup_13 := Bytecode.Dup {val:=12, isLt:=(by simp_arith)}
 @[simp]
-def Dup_14 := Bytecode.Dup {val:=13, isLt:=(by simp)}
+def Dup_14 := Bytecode.Dup {val:=13, isLt:=(by simp_arith)}
 @[simp]
-def Dup_15 := Bytecode.Dup {val:=14, isLt:=(by simp)}
+def Dup_15 := Bytecode.Dup {val:=14, isLt:=(by simp_arith)}
 @[simp]
-def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp)}
+def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp_arith)}
 
 -- ==================================================================
 -- Swap N
@@ -106,34 +106,34 @@ def SWAP (evm: Evm)(n:u4) : Outcome :=
     Error StackUnderflow
 
 @[simp]
-def Swap_1 := Bytecode.Swap {val:=0, isLt:=(by simp)}
+def Swap_1 := Bytecode.Swap {val:=0, isLt:=(by simp_arith)}
 @[simp]
-def Swap_2 := Bytecode.Swap {val:=1, isLt:=(by simp)}
+def Swap_2 := Bytecode.Swap {val:=1, isLt:=(by simp_arith)}
 @[simp]
-def Swap_3 := Bytecode.Swap {val:=2, isLt:=(by simp)}
+def Swap_3 := Bytecode.Swap {val:=2, isLt:=(by simp_arith)}
 @[simp]
-def Swap_4 := Bytecode.Swap {val:=3, isLt:=(by simp)}
+def Swap_4 := Bytecode.Swap {val:=3, isLt:=(by simp_arith)}
 @[simp]
-def Swap_5 := Bytecode.Swap {val:=4, isLt:=(by simp)}
+def Swap_5 := Bytecode.Swap {val:=4, isLt:=(by simp_arith)}
 @[simp]
-def Swap_6 := Bytecode.Swap {val:=5, isLt:=(by simp)}
+def Swap_6 := Bytecode.Swap {val:=5, isLt:=(by simp_arith)}
 @[simp]
-def Swap_7 := Bytecode.Swap {val:=6, isLt:=(by simp)}
+def Swap_7 := Bytecode.Swap {val:=6, isLt:=(by simp_arith)}
 @[simp]
-def Swap_8 := Bytecode.Swap {val:=7, isLt:=(by simp)}
+def Swap_8 := Bytecode.Swap {val:=7, isLt:=(by simp_arith)}
 @[simp]
-def Swap_9 := Bytecode.Swap {val:=8, isLt:=(by simp)}
+def Swap_9 := Bytecode.Swap {val:=8, isLt:=(by simp_arith)}
 @[simp]
-def Swap_10 := Bytecode.Swap {val:=9, isLt:=(by simp)}
+def Swap_10 := Bytecode.Swap {val:=9, isLt:=(by simp_arith)}
 @[simp]
-def Swap_11 := Bytecode.Swap {val:=10, isLt:=(by simp)}
+def Swap_11 := Bytecode.Swap {val:=10, isLt:=(by simp_arith)}
 @[simp]
-def Swap_12 := Bytecode.Swap {val:=11, isLt:=(by simp)}
+def Swap_12 := Bytecode.Swap {val:=11, isLt:=(by simp_arith)}
 @[simp]
-def Swap_13 := Bytecode.Swap {val:=12, isLt:=(by simp)}
+def Swap_13 := Bytecode.Swap {val:=12, isLt:=(by simp_arith)}
 @[simp]
-def Swap_14 := Bytecode.Swap {val:=13, isLt:=(by simp)}
+def Swap_14 := Bytecode.Swap {val:=13, isLt:=(by simp_arith)}
 @[simp]
-def Swap_15 := Bytecode.Swap {val:=14, isLt:=(by simp)}
+def Swap_15 := Bytecode.Swap {val:=14, isLt:=(by simp_arith)}
 @[simp]
-def Swap_16 := Bytecode.Swap {val:=15, isLt:=(by simp)}
+def Swap_16 := Bytecode.Swap {val:=15, isLt:=(by simp_arith)}

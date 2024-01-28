@@ -27,6 +27,5 @@ def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat :=
 example (n:byte)(i:Fin 1): (from_bytes_be [n] i) = n.val :=
 by
   unfold from_bytes_be
-  have p:i={val:=0,isLt:=(by simp)} := (by sorry);
-  simp [*]
-  rfl
+  match i with
+  | 0 => simp [*]; rfl

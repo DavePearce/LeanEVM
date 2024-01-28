@@ -28,38 +28,6 @@ inductive Bytecode where
 -- f0s: System operations
 | Invalid
 
-@[simp]
-def Dup_1 := Bytecode.Dup {val:=0, isLt:=(by simp_arith)}
-@[simp]
-def Dup_2 := Bytecode.Dup {val:=1, isLt:=(by simp_arith)}
-@[simp]
-def Dup_3 := Bytecode.Dup {val:=2, isLt:=(by simp_arith)}
-@[simp]
-def Dup_4 := Bytecode.Dup {val:=3, isLt:=(by simp_arith)}
-@[simp]
-def Dup_5 := Bytecode.Dup {val:=4, isLt:=(by simp_arith)}
-@[simp]
-def Dup_6 := Bytecode.Dup {val:=5, isLt:=(by simp_arith)}
-@[simp]
-def Dup_7 := Bytecode.Dup {val:=6, isLt:=(by simp_arith)}
-@[simp]
-def Dup_8 := Bytecode.Dup {val:=7, isLt:=(by simp_arith)}
-@[simp]
-def Dup_9 := Bytecode.Dup {val:=8, isLt:=(by simp_arith)}
-@[simp]
-def Dup_10 := Bytecode.Dup {val:=9, isLt:=(by simp_arith)}
-@[simp]
-def Dup_11 := Bytecode.Dup {val:=10, isLt:=(by simp_arith)}
-@[simp]
-def Dup_12 := Bytecode.Dup {val:=11, isLt:=(by simp_arith)}
-@[simp]
-def Dup_13 := Bytecode.Dup {val:=12, isLt:=(by simp_arith)}
-@[simp]
-def Dup_14 := Bytecode.Dup {val:=13, isLt:=(by simp_arith)}
-@[simp]
-def Dup_15 := Bytecode.Dup {val:=14, isLt:=(by simp_arith)}
-@[simp]
-def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp_arith)}
 
 /- =============================================================== -/
 /- Code ROM -/
@@ -118,22 +86,22 @@ def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
   | 0x6e => Bytecode.Push (st.slice pc 15)
   | 0x6f => Bytecode.Push (st.slice pc 16)
   -- 80s: Duplication Operations
-  | 0x80 => Dup_1
-  | 0x81 => Dup_2
-  | 0x82 => Dup_3
-  | 0x83 => Dup_4
-  | 0x84 => Dup_5
-  | 0x85 => Dup_6
-  | 0x86 => Dup_7
-  | 0x87 => Dup_8
-  | 0x88 => Dup_9
-  | 0x89 => Dup_10
-  | 0x8a => Dup_11
-  | 0x8b => Dup_12
-  | 0x8c => Dup_13
-  | 0x8d => Dup_14
-  | 0x8e => Dup_15
-  | 0x8f => Dup_16
+  | 0x80 => Bytecode.Dup {val:=0, isLt:=(by simp_arith)}
+  | 0x81 => Bytecode.Dup {val:=1, isLt:=(by simp_arith)}
+  | 0x82 => Bytecode.Dup {val:=2, isLt:=(by simp_arith)}
+  | 0x83 => Bytecode.Dup {val:=3, isLt:=(by simp_arith)}
+  | 0x84 => Bytecode.Dup {val:=4, isLt:=(by simp_arith)}
+  | 0x85 => Bytecode.Dup {val:=5, isLt:=(by simp_arith)}
+  | 0x86 => Bytecode.Dup {val:=6, isLt:=(by simp_arith)}
+  | 0x87 => Bytecode.Dup {val:=7, isLt:=(by simp_arith)}
+  | 0x88 => Bytecode.Dup {val:=8, isLt:=(by simp_arith)}
+  | 0x89 => Bytecode.Dup {val:=9, isLt:=(by simp_arith)}
+  | 0x8a => Bytecode.Dup {val:=10, isLt:=(by simp_arith)}
+  | 0x8b => Bytecode.Dup {val:=11, isLt:=(by simp_arith)}
+  | 0x8c => Bytecode.Dup {val:=12, isLt:=(by simp_arith)}
+  | 0x8d => Bytecode.Dup {val:=13, isLt:=(by simp_arith)}
+  | 0x8e => Bytecode.Dup {val:=14, isLt:=(by simp_arith)}
+  | 0x8f => Bytecode.Dup {val:=15, isLt:=(by simp_arith)}
   -- 90s: Exchange Operations
   -- a0s: Logging Operations
   -- f0s: System operations

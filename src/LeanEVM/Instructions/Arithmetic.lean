@@ -25,7 +25,7 @@ def ADD (evm: Evm) : Outcome :=
 -- Executing ADD on an empty Evm produces a stack overflow.
 example : (ADD EmptyEvm) = (Error StackUnderflow) :=
 by
-  simp
+  simp_arith
 
 -- Executing ADD on Evm with two operands succeeds.
 lemma AddOK(rest:List u256): exists evm, (ADD {stack:=l::r::rest}) = (Ok evm) :=
@@ -52,7 +52,7 @@ def SUB (evm: Evm) : Outcome :=
     -- Push result on stack
     Ok (evm'.push res)
   else
-    Error StackUnderflow    
+    Error StackUnderflow
 
 -- Test 0-1 = MAX
 example (rest:List u256): exists evm, (SUB {stack:=U256_0::U256_1::rest}) = (Ok evm) :=
@@ -68,7 +68,7 @@ by
   exists {stack := U256_1::rest}
   match rest with
   | h::t => simp; unfold u256.sub; rfl
-  | [] => simp; unfold u256.sub; rfl  
+  | [] => simp; unfold u256.sub; rfl
 
 -- ==================================================================
 -- Mul
@@ -87,7 +87,7 @@ def MUL (evm: Evm) : Outcome :=
     -- Push result on stack
     Ok (evm'.push res)
   else
-    Error StackUnderflow  
+    Error StackUnderflow
 
 -- Test 1*2 = 2
 example (rest:List u256): exists evm, (MUL {stack:=U256_1::U256_2::rest}) = (Ok evm) :=
@@ -122,7 +122,7 @@ def DIV (evm: Evm) : Outcome :=
     -- Push result on stack
     Ok (evm'.push res)
   else
-    Error StackUnderflow  
+    Error StackUnderflow
 
 -- Test 4/2 = 2
 example (rest:List u256): exists evm, (DIV {stack:=U256_4::U256_2::rest}) = (Ok evm) :=
@@ -139,4 +139,3 @@ by
   match rest with
   | h::t => simp; unfold u256.div; rfl
   | [] => simp; unfold u256.div; rfl
-
