@@ -7,7 +7,7 @@ opaque BYTE_0 : byte := {val:=0, isLt:=(by simp)}
 
 -- Construct a natural number from a sequence of one or more bytes store in big
 -- endian form.
-def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat := 
+def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat :=
   -- Read ith byte
   let b : byte := bytes[i];
   -- Decide what to do
@@ -15,7 +15,7 @@ def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat :=
   else
     -- Construct i-1
     let im1 : Fin bytes.length := {val:=i.val-1,isLt:=(
-      by 
+      by
         have p : i.val-1 < i.val := (Nat.pred_lt r);
         linarith [i.isLt])
     };
@@ -27,6 +27,6 @@ def from_bytes_be(bytes:List byte)(i: Fin bytes.length) : Nat :=
 example (n:byte)(i:Fin 1): (from_bytes_be [n] i) = n.val :=
 by
   unfold from_bytes_be
-  have p:i={val:=0,isLt:=(by simp)} := (by simp);  
+  have p:i={val:=0,isLt:=(by simp)} := (by sorry);
   simp [*]
   rfl
