@@ -8,8 +8,11 @@ open Outcome
 -- ==================================================================
 
 @[simp]
-def PUSH (evm: Evm)(n:u256) : Outcome :=
-  Ok (evm.push n)
+def PUSH (evm: Evm)(bs:Array u8) : Outcome :=
+  -- Convert bytes into a word
+  let w := u256.from_bytes bs;
+  -- Push word
+  Ok (evm.push w)
 
 -- ==================================================================
 -- Pop
