@@ -25,16 +25,13 @@ def u256 := Fin TWO_256
 
 def u256.from_bytes(bytes:Array u8) : u256 :=
   let len : Nat := bytes.data.length;
-  -- Check for base case
-  if p:len = 0 then Fin.ofNat 0
-  else
-    have w : len > 0 := (by exact Nat.pos_of_ne_zero p);
-    -- Construct starting index (i.e. zero)
-    let i : (Fin len) := {val:=0,isLt:=(by linarith)};
-    -- Convert bytes into nat
-    let n := from_bytes_be bytes.data i;
-    -- Convert nat into u256
-    Fin.ofNat n
+  have p : len <= 32 := by sorry -- ASSUMPTION TO PROVE
+  -- Convert bytes into nat
+  let n := from_bytes_be bytes.data;
+  -- Bound size of n using lemma
+  have q : n < 256^32 := (from_bytes_be_bound 32 bytes.data p)
+  -- Convert nat into u256
+  {val:=n, isLt:=q}
 
 def u256.add (i:u256)(j: u256) : u256 :=
   Fin.add i j
@@ -85,4 +82,5 @@ by
   unfold from_bytes_be
   rw [<-p]
   have q : n.val <= U256_MAX.val := (by sorry);
-  exact fin_ofnat_lt n.val U256_MAX.val q
+  --exact fin_ofnat_lt n.val U256_MAX.val q
+  sorry
