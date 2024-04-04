@@ -23,9 +23,7 @@ def TWO_256 := 0x100000000000000000000000000000000000000000000000000000000000000
 
 def u256 := Fin TWO_256
 
-def u256.from_bytes(bytes:Array u8) : u256 :=
-  let len : Nat := bytes.data.length;
-  have p : len <= 32 := by sorry -- ASSUMPTION TO PROVE
+def u256.from_bytes(bytes:Array u8)(p : bytes.data.length ≤ 32) : u256 :=
   -- Convert bytes into nat
   let n := from_bytes_be bytes.data;
   -- Bound size of n using lemma
@@ -73,14 +71,16 @@ by
   simp [*]
   -- auto [p]
 
+-- Proof that a literal of length one has a length < 32.
+def arr_len_lit1(n:byte) : #[n].data.length ≤ 32 :=
+by
+  sorry
+
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.
-example (n:byte)(m:u256)(p:n.val=m.val): (u256.from_bytes #[n]).val = m.val :=
+example (n:byte): (u256.from_bytes #[n] (arr_len_lit1 n)).val = n.val :=
 by
   unfold u256.from_bytes
   simp
-  unfold from_bytes_be
-  rw [<-p]
-  have q : n.val <= U256_MAX.val := (by sorry);
-  --exact fin_ofnat_lt n.val U256_MAX.val q
-  sorry
+  repeat unfold from_bytes_be
+  simp_arith
