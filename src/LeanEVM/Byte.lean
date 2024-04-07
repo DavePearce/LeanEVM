@@ -1,4 +1,8 @@
+import LeanEVM.FinVec
+
 def byte := Fin 256
+
+def Bytes32 := FinVec (n:=32) byte
 
 opaque BYTE_0 : byte := {val:=0, isLt:=(by simp)}
 

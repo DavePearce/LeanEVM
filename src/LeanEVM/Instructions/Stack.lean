@@ -1,5 +1,5 @@
 import LeanEVM.State
-
+import LeanEVM.Byte
 open Exception
 open Outcome
 
@@ -8,9 +8,9 @@ open Outcome
 -- ==================================================================
 
 @[simp]
-def PUSH (evm: Evm)(bs:Array u8)(p:bs.data.length <= 32) : Outcome :=
+def PUSH (evm: Evm)(bs: Bytes32) : Outcome :=
   -- Convert bytes into a word
-  let w := u256.from_bytes bs p;
+  let w := u256.from_bytes bs;
   -- Push word
   Ok (evm.push w)
 

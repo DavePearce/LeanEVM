@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Linarith
 import LeanEVM.State
 import LeanEVM.Util
 import LeanEVM.Instructions.Arithmetic
@@ -22,7 +23,7 @@ def dispatch (evm: Evm) : Bytecode -> Outcome
 | Bytecode.Div => DIV evm
 | Bytecode.Pop => POP evm
 | Bytecode.Dup n => DUP evm n
-| Bytecode.Push bs => PUSH evm bs (by sorry)
+| Bytecode.Push bs => PUSH evm bs
 | Bytecode.Swap n => SWAP evm n
 | Bytecode.Invalid => Error InvalidOpcode
 
@@ -52,51 +53,46 @@ by
 example (evm:Evm): ∃evm', (eval [Push n, Push m, Add] evm) = Ok evm' :=
 by
   simp
-  sorry
 
 -- Executing DUP1 has the right effect
 example (evm:Evm): ∃evm', (eval [Push ns, Dup_1] evm) = (Ok evm') :=
 by
-  let n := u256.from_bytes ns (by sorry);
+  let n := u256.from_bytes ns
   exists {stack := n::n::evm.stack}
   simp [*]
 
 -- Executing DUP2 has the right effect
 example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Dup_2] evm) = (Ok evm') :=
 by
-  let n := u256.from_bytes ns (by sorry);
-  let m := u256.from_bytes ms (by sorry);
+  let n := u256.from_bytes ns
+  let m := u256.from_bytes ms
   exists {stack := n::m::n::evm.stack}
   simp [*]
-  sorry
 
 -- Executing DUP3 has the right effect
 example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Push ls, Dup_3] evm) = (Ok evm') :=
 by
-  let n := u256.from_bytes ns (by sorry);
-  let m := u256.from_bytes ms (by sorry);
-  let l := u256.from_bytes ls (by sorry);
+  let n := u256.from_bytes ns
+  let m := u256.from_bytes ms
+  let l := u256.from_bytes ls
   exists {stack := n::l::m::n::evm.stack}
   simp [*]
-  --simp_arith
-  sorry
+  simp_arith
 
 -- Executing SWAP1 has the right effect
 example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Swap_1] evm) = (Ok evm') :=
 by
-  let n := u256.from_bytes ns (by sorry);
-  let m := u256.from_bytes ms (by sorry);
+  let n := u256.from_bytes ns
+  let m := u256.from_bytes ms
   exists {stack := n::m::evm.stack}
   simp [List.set]
-  sorry
 
 -- Executing SWAP2 has the right effect
 example (evm:Evm): ∃evm', (eval [Push ns, Push ms, Push ls, Swap_2] evm) = (Ok evm') :=
 by
-  let n := u256.from_bytes ns (by sorry);
-  let m := u256.from_bytes ms (by sorry);
-  let l := u256.from_bytes ls (by sorry);
+  let n := u256.from_bytes ns
+  let m := u256.from_bytes ms
+  let l := u256.from_bytes ls
   exists {stack := n::m::l::evm.stack}
   simp [List.set,eval.reduce]
-  --simp_arith
-  sorry
+  simp_arith

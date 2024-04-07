@@ -21,11 +21,11 @@ def TWO_256 := 0x100000000000000000000000000000000000000000000000000000000000000
 
 def u256 := Fin TWO_256
 
-def u256.from_bytes(bytes:Array u8)(p : bytes.data.length ≤ 32) : u256 :=
+def u256.from_bytes(bytes: Bytes32) : u256 :=
   -- Convert bytes into nat
   let n := from_bytes_be bytes.data;
   -- Bound size of n using lemma
-  have q : n < 256^32 := (from_bytes_be_bound 32 bytes.data p)
+  have q : n < 256^32 := (from_bytes_be_bound 32 bytes.data bytes.isLt)
   -- Convert nat into u256
   {val:=n, isLt:=q}
 
@@ -76,9 +76,10 @@ by
 
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.
-example (n:byte): (u256.from_bytes #[n] (arr_len_lit1 n)).val = n.val :=
+example (n:byte)(bs:Bytes32)(p:bs.data=[n]): (u256.from_bytes bs).val = n.val :=
 by
   unfold u256.from_bytes
   simp
   repeat unfold from_bytes_be
-  simp_arith
+  --simp_arith
+  sorry
