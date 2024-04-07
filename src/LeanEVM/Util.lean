@@ -1,5 +1,3 @@
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LibrarySearch
 import LeanEVM.Byte
 
 /- =============================================================== -/
@@ -64,17 +62,17 @@ by
 /- Tests -/
 /- =============================================================== -/
 
-lemma fin_ofnat_lt (n:Nat)(m:Nat)(p:n<=m) : (Fin.ofNat (n:=m) n).val = n :=
+def fin_ofnat_lt (n:Nat)(m:Nat)(p:n<=m) : (Fin.ofNat (n:=m) n).val = n :=
 by
   unfold Fin.ofNat
-  have p: n % (m+1) = n := by sorry;
+  have p: n % (m+1) = n := by sorry
   simp [*]
   -- auto [p]
 
 -- Proof that a literal of length one has a length < 32.
 def arr_len_lit1(n:byte) : #[n].data.length ≤ 32 :=
 by
-  sorry
+  simp
 
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.

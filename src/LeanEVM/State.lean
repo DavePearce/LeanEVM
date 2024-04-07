@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Linarith
 import LeanEVM.Util
 
 /- =============================================================== -/
@@ -44,7 +43,7 @@ def EvmCode.read(st:EvmCode)(pc:Nat) : u8 :=
   then
     U8_0
   else
-    st.get {val:=pc,isLt:=(by linarith)}
+    st.get {val:=pc,isLt:=(by omega)}
 
 -- Read `n` bytes from the code sequence starting a given `pc` position.
 def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat) : Array u8 :=

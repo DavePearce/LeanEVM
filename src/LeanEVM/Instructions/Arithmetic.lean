@@ -12,7 +12,7 @@ open Outcome
 def ADD (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by linarith);
+    let lhs : u256 := evm.peek 0 (by omega);
     let rhs : u256 := evm.peek 1 (by simp [r]);
     let res : u256 := (u256.add lhs rhs);
     -- Take operands off stack
@@ -28,7 +28,7 @@ by
   simp_arith
 
 -- Executing ADD on Evm with two operands succeeds.
-lemma AddOK(rest:List u256): exists evm, (ADD {stack:=l::r::rest}) = (Ok evm) :=
+def AddOK(rest:List u256): exists evm, (ADD {stack:=l::r::rest}) = (Ok evm) :=
 by
   exists {stack := (Fin.add l r)::rest}
   match rest with
@@ -44,7 +44,7 @@ by
 def SUB (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by linarith);
+    let lhs : u256 := evm.peek 0 (by omega);
     let rhs : u256 := evm.peek 1 (by simp [r]);
     let res : u256 := (u256.sub lhs rhs);
     -- Take operands off stack
@@ -79,7 +79,7 @@ by
 def MUL (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by linarith);
+    let lhs : u256 := evm.peek 0 (by omega);
     let rhs : u256 := evm.peek 1 (by simp [r]);
     let res : u256 := (u256.mul lhs rhs);
     -- Take operands off stack
@@ -114,7 +114,7 @@ by
 def DIV (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by linarith);
+    let lhs : u256 := evm.peek 0 (by omega);
     let rhs : u256 := evm.peek 1 (by simp [r]);
     let res : u256 := (u256.div lhs rhs);
     -- Take operands off stack
