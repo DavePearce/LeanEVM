@@ -1,4 +1,4 @@
-import LeanEVM.Util
+import LeanEVM.Util.Int
 
 /- =============================================================== -/
 /- Bytecodes -/

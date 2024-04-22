@@ -1,5 +1,5 @@
 import LeanEVM.State
-import LeanEVM.Byte
+import LeanEVM.Util.Bytes
 open Exception
 open Outcome
 

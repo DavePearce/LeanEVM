@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linarith
 import LeanEVM.State
-import LeanEVM.Util
+--import LeanEVM.Util
 import LeanEVM.Instructions.Arithmetic
 import LeanEVM.Instructions.ControlFlow
 import LeanEVM.Instructions.Stack

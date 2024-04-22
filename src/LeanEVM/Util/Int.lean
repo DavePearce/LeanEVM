@@ -1,4 +1,4 @@
-import LeanEVM.Byte
+import LeanEVM.Util.Bytes
 
 /- =============================================================== -/
 /- Constants -/
