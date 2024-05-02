@@ -15,5 +15,4 @@ lean_exe «lean_evm» {
   root := `Main
 }
 
-require mathlib from git "https://github.com/leanprover-community/mathlib4"@"v2024"
-require auto from git "https://github.com/leanprover-community/lean-auto"@"v0.0.5"
+--require mathlib from git "https://github.com/leanprover-community/mathlib4"

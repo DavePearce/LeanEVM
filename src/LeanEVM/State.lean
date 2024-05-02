@@ -1,5 +1,4 @@
-import Mathlib.Tactic.Linarith
-import LeanEVM.Util
+import LeanEVM.Util.Int
 
 /- =============================================================== -/
 /- Bytecodes -/
@@ -19,7 +18,7 @@ inductive Bytecode where
 -- 50s: Stack, Memory Storage and Flow Operations
 | Pop
 -- 60s & 70s: Push Operations
-| Push(bs:Array u8)
+| Push(bs:Bytes32)
 -- 80s: Duplication Operations
 | Dup(n:u4)
 -- 90s: Exchange Operations
@@ -44,10 +43,10 @@ def EvmCode.read(st:EvmCode)(pc:Nat) : u8 :=
   then
     U8_0
   else
-    st.get {val:=pc,isLt:=(by linarith)}
+    st.get {val:=pc,isLt:=(by omega)}
 
 -- Read `n` bytes from the code sequence starting a given `pc` position.
-def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat) : Array u8 :=
+def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat) : Bytes32 :=
   sorry
 
 -- Decode the instruction at a given `pc` position within the code sequence.
