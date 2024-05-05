@@ -1,4 +1,4 @@
-import LeanEVM.Util.Int
+import LeanEVM.Util.UInt
 
 /- =============================================================== -/
 /- Bytecodes -/
@@ -20,9 +20,9 @@ inductive Bytecode where
 -- 60s & 70s: Push Operations
 | Push(bs:Bytes32)
 -- 80s: Duplication Operations
-| Dup(n:u4)
+| Dup(n:UInt4)
 -- 90s: Exchange Operations
-| Swap(n:u4)
+| Swap(n:UInt4)
 -- a0s: Logging Operations
 -- f0s: System operations
 | Invalid
@@ -34,14 +34,14 @@ inductive Bytecode where
 
 def MAX_CODE_SIZE := 24576
 
-def EvmCode := Array u8
+def EvmCode := Array UInt8
 
 -- Read a byte at a given `pc` position within a code sequence.  If the position
 -- is out-of-bounds, then `0` is returned.
-def EvmCode.read(st:EvmCode)(pc:Nat) : u8 :=
+def EvmCode.read(st:EvmCode)(pc:Nat) : UInt8 :=
   if r:pc >= st.size
   then
-    U8_0
+    0
   else
     st.get {val:=pc,isLt:=(by omega)}
 
@@ -52,7 +52,7 @@ def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat) : Bytes32 :=
 -- Decode the instruction at a given `pc` position within the code sequence.
 def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
   -- Read opcode
-  let opcode : u8 := st.read pc;
+  let opcode := st.read pc;
   -- Decode opcode
   match opcode.val with
   -- 0s: Stop and Arithmetic Operations
@@ -109,7 +109,7 @@ def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
 /- =============================================================== -/
 /- Stack -/
 /- =============================================================== -/
-def EvmStack := List u256
+def EvmStack := List UInt256
 
 -- Pop an item of the EVM stack
 @[simp] def EvmStack.pop (st:EvmStack)(n:Nat)(r:n <= st.length) : EvmStack :=
@@ -125,15 +125,15 @@ def EvmStack := List u256
   | [] => []
 
 -- Push an item onto the EVM stack
-@[simp] def EvmStack.push (st:EvmStack)(n:u256) : EvmStack :=
+@[simp] def EvmStack.push (st:EvmStack)(n:UInt256) : EvmStack :=
   n::st
 
 -- Peek an item on the EVM stack
-@[simp] def EvmStack.peek (st:EvmStack)(i:Fin st.length) : u256 :=
+@[simp] def EvmStack.peek (st:EvmStack)(i:Fin st.length) : UInt256 :=
   st.get i
 
 -- Assign an item v to the ith position in the EVM stack
-@[simp] def EvmStack.set (st:EvmStack)(n:u256)(i:Fin st.length) : EvmStack :=
+@[simp] def EvmStack.set (st:EvmStack)(n:UInt256)(i:Fin st.length) : EvmStack :=
   List.set st i n
 
 /- =============================================================== -/
@@ -146,13 +146,13 @@ structure Evm where
 @[simp] def Evm.pop (evm:Evm)(n:Nat)(r:n <= evm.stack.length) : Evm :=
   {stack := evm.stack.pop n r}
 
-@[simp] def Evm.push (evm:Evm)(n:u256) : Evm :=
+@[simp] def Evm.push (evm:Evm)(n:UInt256) : Evm :=
   {stack:=evm.stack.push n}
 
-@[simp] def Evm.peek (evm:Evm)(n:Nat)(r:n < evm.stack.length) : u256 :=
+@[simp] def Evm.peek (evm:Evm)(n:Nat)(r:n < evm.stack.length) : UInt256 :=
   evm.stack.peek { val:= n, isLt := r}
 
-@[simp] def Evm.set (evm:Evm)(n:Nat)(v:u256)(r:n < evm.stack.length) : Evm :=
+@[simp] def Evm.set (evm:Evm)(n:Nat)(v:UInt256)(r:n < evm.stack.length) : Evm :=
   {stack:=evm.stack.set v { val:= n, isLt := r}}
 
 def EmptyEvm : Evm := {stack:=[]}
