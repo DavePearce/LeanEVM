@@ -1,11 +1,8 @@
 import LeanEVM.Util.FinVec
 import LeanEVM.Util.Lemmas
 
-def byte := Fin 256
-
-def Bytes32 := FinVec (n:=32) byte
-
-opaque BYTE_0 : byte := {val:=0, isLt:=(by simp)}
+-- An array of (at most) 32 bytes.
+def Bytes32 := FinVec (n:=32) UInt8
 
 -- ==================================================================================
 -- From Bytes (little endian)
@@ -13,17 +10,17 @@ opaque BYTE_0 : byte := {val:=0, isLt:=(by simp)}
 
 -- Construct a natural number from a sequence of one or more bytes stored in little
 -- endian form.
-def from_bytes_le(bytes:List byte) : Nat :=
+def from_bytes_le(bytes:List UInt8) : Nat :=
   match bytes with
   | List.nil => 0
   | b::bs =>
-      (256 * (from_bytes_le bs)) + b.val
+      (256 * (from_bytes_le bs)) + b.toNat
 
 -- Bound the number returned by `from_bytes_le`.  For example, if one byte is
 -- passed into `from_bytes_le` then the return value is bounded by `256`;
 -- likewise, if two bytes are passed into `from_bytes_le` then the return value
 -- is bounded by `65536`, etc.
-def from_bytes_le_bound(n:Nat)(bytes:List byte)(p:bytes.length ≤ n) : (from_bytes_le bytes) < 256^n :=
+def from_bytes_le_bound(n:Nat)(bytes:List UInt8)(p:bytes.length ≤ n) : (from_bytes_le bytes) < 256^n :=
 by
   match n,bytes with
   | 0, [] => unfold from_bytes_le; simp
@@ -38,16 +35,17 @@ by
       unfold from_bytes_le
       apply (pow256_shift (from_bytes_le bs) b k r)
 
-example (n:byte): (from_bytes_le [n]) = n.val :=
+example (n:UInt8): (from_bytes_le [n]) = n.val :=
 by
   repeat unfold from_bytes_le
   simp
+  rfl
 
-example (n:byte): (from_bytes_le [n, Fin.ofNat 0]) = n.val :=
+example (n:UInt8): (from_bytes_le [n, 0]) = n.val :=
 by
   repeat unfold from_bytes_le
-  unfold Fin.ofNat
   simp
+  rfl
 
 -- ==================================================================================
 -- From Bytes (big endian)
@@ -55,27 +53,27 @@ by
 
 -- Construct a natural number from a sequence of one or more bytes stored in big
 -- endian form.
-def from_bytes_be(bytes:List byte) : Nat :=
+def from_bytes_be(bytes:List UInt8) : Nat :=
   from_bytes_le (List.reverse bytes)
 
 -- Bound the number returned by `from_bytes_be`.  For example, if one byte is
 -- passed into `from_bytes_le` then the return value is bounded by `256`;
 -- likewise, if two bytes are passed into `from_bytes_be` then the return value
 -- is bounded by `65536`, etc.
-def from_bytes_be_bound(n:Nat)(bytes:List byte)(p:bytes.length ≤ n) : (from_bytes_be bytes) < 256^n :=
+def from_bytes_be_bound(n:Nat)(bytes:List UInt8)(p:bytes.length ≤ n) : (from_bytes_be bytes) < 256^n :=
 by
   sorry
 
-example (n:byte): (from_bytes_be [n]) = n.val :=
+example (n:UInt8): (from_bytes_be [n]) = n.val :=
 by
   unfold from_bytes_be
-  simp
   repeat unfold from_bytes_le
   simp
+  rfl
 
-example (n:byte): (from_bytes_be [Fin.ofNat 0, n]) = n.val :=
+example (n:UInt8): (from_bytes_be [0, n]) = n.val :=
 by
   unfold from_bytes_be
   repeat simp; unfold from_bytes_le
-  unfold Fin.ofNat
+  unfold UInt8.toNat
   simp_arith

@@ -4,14 +4,7 @@ import LeanEVM.Util.Bytes
 /- Constants -/
 /- =============================================================== -/
 
-def u4 := Fin 16
-
-/- =============================================================== -/
-/- U8 -/
-/- =============================================================== -/
-
-def u8 := Fin 256
-opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
+def UInt4 := Fin 16
 
 /- =============================================================== -/
 /- U256 -/
@@ -19,34 +12,34 @@ opaque U8_0 : u8 := {val:=0, isLt:=(by simp)}
 
 def TWO_256 := 0x10000000000000000000000000000000000000000000000000000000000000000
 
-def u256 := Fin TWO_256
+def UInt256 := Fin TWO_256
 
-def u256.from_bytes(bytes: Bytes32) : u256 :=
+def UInt256.from_bytes(bytes: Bytes32) : UInt256 :=
   -- Convert bytes into nat
   let n := from_bytes_be bytes.data;
   -- Bound size of n using lemma
   have q : n < 256^32 := (from_bytes_be_bound 32 bytes.data bytes.isLt)
-  -- Convert nat into u256
+  -- Convert nat into UInt256
   {val:=n, isLt:=q}
 
-def u256.add (i:u256)(j: u256) : u256 :=
+def UInt256.add (i:UInt256)(j: UInt256) : UInt256 :=
   Fin.add i j
 
-def u256.sub (i:u256)(j: u256) : u256 :=
+def UInt256.sub (i:UInt256)(j: UInt256) : UInt256 :=
   Fin.sub i j
 
-def u256.mul (i:u256)(j: u256) : u256 :=
+def UInt256.mul (i:UInt256)(j: UInt256) : UInt256 :=
   Fin.mul i j
 
-def u256.div (i:u256)(j: u256) : u256 :=
+def UInt256.div (i:UInt256)(j: UInt256) : UInt256 :=
   Fin.div i j
 
-def U256_0 : u256 := {val:=0, isLt:=(by simp_arith)}
-def U256_1 : u256 := {val:=1, isLt:=(by simp_arith)}
-def U256_2 : u256 := {val:=2, isLt:=(by simp_arith)}
-def U256_3 : u256 := {val:=3, isLt:=(by simp_arith)}
-def U256_4 : u256 := {val:=4, isLt:=(by simp_arith)}
-def U256_MAX : u256 := {val:=TWO_256 - 1, isLt:=(by simp_arith)}
+def U256_0 : UInt256 := {val:=0, isLt:=(by simp_arith)}
+def U256_1 : UInt256 := {val:=1, isLt:=(by simp_arith)}
+def U256_2 : UInt256 := {val:=2, isLt:=(by simp_arith)}
+def U256_3 : UInt256 := {val:=3, isLt:=(by simp_arith)}
+def U256_4 : UInt256 := {val:=4, isLt:=(by simp_arith)}
+def U256_MAX : UInt256 := {val:=TWO_256 - 1, isLt:=(by simp_arith)}
 
 /- =============================================================== -/
 /- Helpers -/
@@ -76,9 +69,9 @@ by
 
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.
-example (n:byte)(bs:Bytes32)(p:bs.data=[n]): (u256.from_bytes bs).val = n.val :=
+example (n:UInt8)(bs:Bytes32)(p:bs.data=[n]): (UInt256.from_bytes bs).val = n.val :=
 by
-  unfold u256.from_bytes
+  unfold UInt256.from_bytes
   simp
   repeat unfold from_bytes_be
   --simp_arith
