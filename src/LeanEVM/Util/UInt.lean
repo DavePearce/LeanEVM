@@ -41,24 +41,11 @@ by
 /- Tests -/
 /- =============================================================== -/
 
-def fin_ofnat_lt (n:Nat)(m:Nat)(p:n<=m) : (Fin.ofNat (n:=m) n).val = n :=
-by
-  unfold Fin.ofNat
-  have p: n % (m+1) = n := by sorry
-  simp [*]
-  -- auto [p]
-
--- Proof that a literal of length one has a length < 32.
-def arr_len_lit1(n:byte) : #[n].data.length ≤ 32 :=
-by
-  simp
-
 -- Simple demonstration that a singleton byte array returns its only byte as the
 -- result.
 example (n:UInt8)(bs:Bytes32)(p:bs.data=[n]): (UInt256.from_bytes bs).val = n.val :=
 by
   unfold UInt256.from_bytes
-  simp
   repeat unfold from_bytes_be
-  --simp_arith
-  sorry
+  simp [p]
+  rfl

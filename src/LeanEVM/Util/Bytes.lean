@@ -60,7 +60,7 @@ def from_bytes_be(bytes:List UInt8) : Nat :=
   | List.nil => 0
   | b::bs =>
       let n := bs.length
-      ((256^n) * b.toNat) + (from_bytes_be bs)
+      (b.toNat * (256^n)) + (from_bytes_be bs)
 
 -- Bound the number returned by `from_bytes_be`.  For example, if one byte is
 -- passed into `from_bytes_le` then the return value is bounded by `256`;
