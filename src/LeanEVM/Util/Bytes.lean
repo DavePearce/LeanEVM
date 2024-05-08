@@ -63,7 +63,7 @@ def from_bytes_be(bytes:List UInt8) : Nat :=
       (b.toNat * (256^n)) + (from_bytes_be bs)
 
 -- Bound the number returned by `from_bytes_be`.  For example, if one byte is
--- passed into `from_bytes_le` then the return value is bounded by `256`;
+-- passed into `from_bytes_be` then the return value is bounded by `256`;
 -- likewise, if two bytes are passed into `from_bytes_be` then the return value
 -- is bounded by `65536`, etc.
 def from_bytes_be_bound(bytes:List UInt8) : (from_bytes_be bytes) < 256^bytes.length :=
