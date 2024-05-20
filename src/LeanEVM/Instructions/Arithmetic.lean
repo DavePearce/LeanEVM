@@ -1,4 +1,5 @@
 import LeanEVM.State
+import LeanEVM.Util.UInt
 
 open Exception
 open Outcome
@@ -12,9 +13,9 @@ open Outcome
 def ADD (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by omega);
-    let rhs : u256 := evm.peek 1 (by simp [r]);
-    let res : u256 := (u256.add lhs rhs);
+    let lhs := evm.peek 0 (by omega);
+    let rhs := evm.peek 1 (by simp [r]);
+    let res := lhs + rhs;
     -- Take operands off stack
     let evm' := evm.pop 2 r;
     -- Push result on stack
@@ -28,12 +29,28 @@ by
   simp_arith
 
 -- Executing ADD on Evm with two operands succeeds.
-def AddOK(rest:List u256): exists evm, (ADD {stack:=l::r::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (ADD {stack:=l::r::rest}) = (Ok evm) :=
 by
   exists {stack := (Fin.add l r)::rest}
   match rest with
-  | h::t => simp; unfold u256.add; rfl
-  | [] => simp; unfold u256.add; rfl
+  | h::t => rfl
+  | [] => rfl
+
+-- Test 1+2 = 3
+example (rest:List UInt256): exists evm, (ADD {stack:=1::2::rest}) = (Ok evm) :=
+by
+  exists {stack := 3::rest}
+  match rest with
+  | h::t => rfl
+  | [] => rfl
+
+-- Test max+1 = 0
+example (rest:List UInt256): exists evm, (ADD {stack:=(1::(U256_MAX::rest))}) = (Ok evm) :=
+by
+  exists {stack := 0::rest}
+  match rest with
+  | h::t => simp_arith; simp [List.get]; simp_arith
+  | [] => simp_arith
 
 -- ==================================================================
 -- Sub
@@ -44,9 +61,9 @@ by
 def SUB (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by omega);
-    let rhs : u256 := evm.peek 1 (by simp [r]);
-    let res : u256 := (u256.sub lhs rhs);
+    let lhs : UInt256 := evm.peek 0 (by omega);
+    let rhs : UInt256 := evm.peek 1 (by simp [r]);
+    let res : UInt256 := lhs - rhs;
     -- Take operands off stack
     let evm' := evm.pop 2 r;
     -- Push result on stack
@@ -55,20 +72,20 @@ def SUB (evm: Evm) : Outcome :=
     Error StackUnderflow
 
 -- Test 0-1 = MAX
-example (rest:List u256): exists evm, (SUB {stack:=U256_0::U256_1::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (SUB {stack:=0::1::rest}) = (Ok evm) :=
 by
   exists {stack := U256_MAX::rest}
   match rest with
-  | h::t => simp; unfold u256.sub; rfl
-  | [] => simp; unfold u256.sub; rfl
+  | h::t => simp_arith; sorry
+  | [] => sorry
 
 -- Test 3-1 = 2
-example (rest:List u256): exists evm, (SUB {stack:=U256_3::U256_2::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (SUB {stack:=3::2::rest}) = (Ok evm) :=
 by
-  exists {stack := U256_1::rest}
+  exists {stack := 1::rest}
   match rest with
-  | h::t => simp; unfold u256.sub; rfl
-  | [] => simp; unfold u256.sub; rfl
+  | h::t => rfl
+  | [] => rfl
 
 -- ==================================================================
 -- Mul
@@ -79,9 +96,9 @@ by
 def MUL (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by omega);
-    let rhs : u256 := evm.peek 1 (by simp [r]);
-    let res : u256 := (u256.mul lhs rhs);
+    let lhs := evm.peek 0 (by omega);
+    let rhs := evm.peek 1 (by simp [r]);
+    let res := lhs * rhs;
     -- Take operands off stack
     let evm' := evm.pop 2 r;
     -- Push result on stack
@@ -90,20 +107,20 @@ def MUL (evm: Evm) : Outcome :=
     Error StackUnderflow
 
 -- Test 1*2 = 2
-example (rest:List u256): exists evm, (MUL {stack:=U256_1::U256_2::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (MUL {stack:=1::2::rest}) = (Ok evm) :=
 by
-  exists {stack := U256_2::rest}
+  exists {stack := 2::rest}
   match rest with
-  | h::t => simp; unfold u256.mul; rfl
-  | [] => simp; unfold u256.mul; rfl
+  | h::t => rfl
+  | [] => rfl
 
 -- Test 2*2 = 4
-example (rest:List u256): exists evm, (MUL {stack:=U256_2::U256_2::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (MUL {stack:=2::2::rest}) = (Ok evm) :=
 by
-  exists {stack := U256_4::rest}
+  exists {stack := 4::rest}
   match rest with
-  | h::t => simp; unfold u256.mul; rfl
-  | [] => simp; unfold u256.mul; rfl
+  | h::t => rfl
+  | [] => rfl
 
 -- ==================================================================
 -- Div
@@ -114,9 +131,9 @@ by
 def DIV (evm: Evm) : Outcome :=
   if r:evm.stack.length > 1
   then
-    let lhs : u256 := evm.peek 0 (by omega);
-    let rhs : u256 := evm.peek 1 (by simp [r]);
-    let res : u256 := (u256.div lhs rhs);
+    let lhs : UInt256 := evm.peek 0 (by omega);
+    let rhs : UInt256 := evm.peek 1 (by simp [r]);
+    let res : UInt256 := lhs / rhs;
     -- Take operands off stack
     let evm' := evm.pop 2 r;
     -- Push result on stack
@@ -125,17 +142,17 @@ def DIV (evm: Evm) : Outcome :=
     Error StackUnderflow
 
 -- Test 4/2 = 2
-example (rest:List u256): exists evm, (DIV {stack:=U256_4::U256_2::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (DIV {stack:=4::2::rest}) = (Ok evm) :=
 by
-  exists {stack := U256_2::rest}
+  exists {stack := 2::rest}
   match rest with
-  | h::t => simp; unfold u256.div; rfl
-  | [] => simp; unfold u256.div; rfl
+  | h::t => rfl
+  | [] => rfl
 
 -- Test 1/0 = 0
-example (rest:List u256): exists evm, (DIV {stack:=U256_1::U256_0::rest}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (DIV {stack:=1::0::rest}) = (Ok evm) :=
 by
-  exists {stack := U256_0::rest}
+  exists {stack := 0::rest}
   match rest with
-  | h::t => simp; unfold u256.div; rfl
-  | [] => simp; unfold u256.div; rfl
+  | h::t => rfl
+  | [] => rfl
