@@ -17,7 +17,7 @@ by
   let l := m.toNat
   --
   have q : l ≤ 255 := by exact Nat.le_of_lt_succ m.val.isLt
-  have r : l*256^k ≤ 255*256^k := by exact Nat.mul_le_mul_right (256 ^ k) q
+  have r : l * 256^k ≤ 255*256^k := by exact Nat.mul_le_mul_right (256 ^ k) q
   have s : l * 256^k + 256^k ≤ 256^(k+1) := by omega
   have t : l * 256^k + n < l * 256^k + 256^k := by
     exact Nat.add_lt_add_left p (l * 256 ^ k)

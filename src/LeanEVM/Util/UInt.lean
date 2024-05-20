@@ -1,37 +1,24 @@
 import LeanEVM.Util.Bytes
 
 /- =============================================================== -/
-/- Constants -/
+/- Uint4 -/
 /- =============================================================== -/
 
 abbrev UInt4 := Fin 16
-
+@[simp]
 abbrev U4_MAX : UInt4 := {val:=15, isLt:=(by simp_arith)}
-
-def sum(items: List (Fin n))(p:n>0) : Fin n :=
-  match items with
-  | h::t => h + (sum t p)
-  | [] => {val:=0, isLt:=(by simp_arith [p])}
-
-example(rest: List UInt4)(p:16>0) : sum (1::U4_MAX::rest) p = (sum rest p)  :=
-by
-
 
 /- =============================================================== -/
 /- U256 -/
 /- =============================================================== -/
 
 abbrev UInt256 := Fin (2^256)
-
-def U256_MAX : UInt256 := {val:=(2^256) - 1, isLt:=(by simp_arith)}
+@[simp]
+abbrev U256_MAX : UInt256 := {val:=(2^256) - 1, isLt:=(by simp_arith)}
 
 example : Fin.add 1 U256_MAX = 0 :=
 by
   simp_arith
-
--- example(rest: List UInt256) : sum (1::U256_MAX::rest) = (sum rest) :=
--- by
---   simp_arith
 
 -- Construct an unsigned 256bit integer from a sequence of at most 32 bytes,
 -- assuming a big endian order (i.e. most significant byte first).

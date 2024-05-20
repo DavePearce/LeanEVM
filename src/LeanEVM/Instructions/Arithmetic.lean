@@ -45,12 +45,9 @@ by
   | [] => rfl
 
 -- Test max+1 = 0
-example (rest:List UInt256): exists evm, (ADD {stack:=(1::(U256_MAX::rest))}) = (Ok evm) :=
+example (rest:List UInt256): exists evm, (ADD {stack:=1::U256_MAX::rest}) = (Ok evm) :=
 by
-  exists {stack := 0::rest}
-  match rest with
-  | h::t => simp_arith; simp [List.get]; simp_arith
-  | [] => simp_arith
+  simp_arith
 
 -- ==================================================================
 -- Sub
@@ -76,8 +73,8 @@ example (rest:List UInt256): exists evm, (SUB {stack:=0::1::rest}) = (Ok evm) :=
 by
   exists {stack := U256_MAX::rest}
   match rest with
-  | h::t => simp_arith; sorry
-  | [] => sorry
+  | h::t => rfl
+  | [] => rfl
 
 -- Test 3-1 = 2
 example (rest:List UInt256): exists evm, (SUB {stack:=3::2::rest}) = (Ok evm) :=
