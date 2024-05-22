@@ -10,7 +10,7 @@ open Outcome
 @[simp]
 def PUSH (evm: Evm)(bs: Bytes32) : Outcome :=
   -- Convert bytes into a word
-  let w := u256.from_bytes bs;
+  let w := UInt256.from_bytes bs;
   -- Push word
   Ok (evm.push w)
 
@@ -28,7 +28,7 @@ def POP (evm: Evm) : Outcome :=
     Error Exception.StackUnderflow
 
 -- Executing POP on Evm with at least one operand succeeds.
-def PopOK (st:List u256)(p:st = v::rest): (POP {stack:=st}) = (Ok {stack:=rest}) :=
+def PopOK (st:List UInt256)(p:st = v::rest): (POP {stack:=st}) = (Ok {stack:=rest}) :=
 by
   simp [p]
   match rest with
@@ -47,10 +47,10 @@ by
 -- ==================================================================
 
 @[simp]
-def DUP (evm: Evm)(n:u4) : Outcome :=
+def DUP (evm: Evm)(n:UInt4) : Outcome :=
   if r:evm.stack.length > n.val
   then
-    let val : u256 := evm.peek n.val (by simp [r]);
+    let val : UInt256 := evm.peek n.val (by simp [r]);
     Ok (evm.push val)
   else
     Error StackUnderflow
@@ -93,11 +93,11 @@ def Dup_16 := Bytecode.Dup {val:=15, isLt:=(by simp_arith)}
 -- ==================================================================
 
 @[simp]
-def SWAP (evm: Evm)(n:u4) : Outcome :=
+def SWAP (evm: Evm)(n:UInt4) : Outcome :=
   if r:evm.stack.length > (n.val+1)
   then
-    let v0 : u256 := evm.peek 0 (by omega);
-    let vn : u256 := evm.peek (n.val+1) (by simp [r]);
+    let v0 : UInt256 := evm.peek 0 (by omega);
+    let vn : UInt256 := evm.peek (n.val+1) (by simp [r]);
     -- Assign nth item to top position
     let evm' := evm.set 0 vn (by omega);
     -- Assign top item to nth position

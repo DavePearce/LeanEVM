@@ -1,3 +1,4 @@
+import Batteries.Data.List.Lemmas
 import LeanEVM.Util.UInt
 
 /- =============================================================== -/
@@ -46,8 +47,13 @@ def EvmCode.read(st:EvmCode)(pc:Nat) : UInt8 :=
     st.get {val:=pc,isLt:=(by omega)}
 
 -- Read `n` bytes from the code sequence starting a given `pc` position.
-def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat) : Bytes32 :=
-  sorry
+def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat)(p:n≤32) : Bytes32 :=
+  let bytes := st.data.take n
+  -- Prove bytes has at most 32 elements.
+  have q : bytes.length ≤ n := by
+    apply List.length_take_le
+  -- Construct FinVec
+  {data:=bytes, isLt:=by exact Nat.le_trans q p}
 
 -- Decode the instruction at a given `pc` position within the code sequence.
 def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
@@ -68,22 +74,22 @@ def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
   -- 50s: Stack, Memory Storage and Flow Operations
   | 0x50 => Bytecode.Pop
   -- 60s & 70s: Push Operations
-  | 0x60 => Bytecode.Push (st.slice pc 1)
-  | 0x61 => Bytecode.Push (st.slice pc 2)
-  | 0x62 => Bytecode.Push (st.slice pc 3)
-  | 0x63 => Bytecode.Push (st.slice pc 4)
-  | 0x64 => Bytecode.Push (st.slice pc 5)
-  | 0x65 => Bytecode.Push (st.slice pc 6)
-  | 0x66 => Bytecode.Push (st.slice pc 7)
-  | 0x67 => Bytecode.Push (st.slice pc 8)
-  | 0x68 => Bytecode.Push (st.slice pc 9)
-  | 0x69 => Bytecode.Push (st.slice pc 10)
-  | 0x6a => Bytecode.Push (st.slice pc 11)
-  | 0x6b => Bytecode.Push (st.slice pc 12)
-  | 0x6c => Bytecode.Push (st.slice pc 13)
-  | 0x6d => Bytecode.Push (st.slice pc 14)
-  | 0x6e => Bytecode.Push (st.slice pc 15)
-  | 0x6f => Bytecode.Push (st.slice pc 16)
+  | 0x60 => Bytecode.Push (st.slice pc 1 (by simp_arith))
+  | 0x61 => Bytecode.Push (st.slice pc 2 (by simp_arith))
+  | 0x62 => Bytecode.Push (st.slice pc 3 (by simp_arith))
+  | 0x63 => Bytecode.Push (st.slice pc 4 (by simp_arith))
+  | 0x64 => Bytecode.Push (st.slice pc 5 (by simp_arith))
+  | 0x65 => Bytecode.Push (st.slice pc 6 (by simp_arith))
+  | 0x66 => Bytecode.Push (st.slice pc 7 (by simp_arith))
+  | 0x67 => Bytecode.Push (st.slice pc 8 (by simp_arith))
+  | 0x68 => Bytecode.Push (st.slice pc 9 (by simp_arith))
+  | 0x69 => Bytecode.Push (st.slice pc 10 (by simp_arith))
+  | 0x6a => Bytecode.Push (st.slice pc 11 (by simp_arith))
+  | 0x6b => Bytecode.Push (st.slice pc 12 (by simp_arith))
+  | 0x6c => Bytecode.Push (st.slice pc 13 (by simp_arith))
+  | 0x6d => Bytecode.Push (st.slice pc 14 (by simp_arith))
+  | 0x6e => Bytecode.Push (st.slice pc 15 (by simp_arith))
+  | 0x6f => Bytecode.Push (st.slice pc 16 (by simp_arith))
   -- 80s: Duplication Operations
   | 0x80 => Bytecode.Dup {val:=0, isLt:=(by simp_arith)}
   | 0x81 => Bytecode.Dup {val:=1, isLt:=(by simp_arith)}
@@ -168,7 +174,7 @@ inductive Exception where
 
 inductive Outcome where
 | Ok(evm: Evm)
-| Done (gas: Nat)(data: Array u8)
+| Done (gas: Nat)(data: Array UInt8)
 | Error (err: Exception)
 
 -- Map an outcome over a transition function.
