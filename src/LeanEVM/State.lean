@@ -1,6 +1,6 @@
 import Batteries.Data.List.Lemmas
 import LeanEVM.Util.UInt
-
+set_option pp.numericTypes true
 /- =============================================================== -/
 /- Bytecodes -/
 /- =============================================================== -/
@@ -35,27 +35,30 @@ inductive Bytecode where
 
 def MAX_CODE_SIZE := 24576
 
-def EvmCode := Array UInt8
+def EvmCode := List UInt8
 
 -- Read a byte at a given `pc` position within a code sequence.  If the position
 -- is out-of-bounds, then `0` is returned.
+@[simp]
 def EvmCode.read(st:EvmCode)(pc:Nat) : UInt8 :=
-  if r:pc >= st.size
+  if r:pc >= st.length
   then
     0
   else
     st.get {val:=pc,isLt:=(by omega)}
 
 -- Read `n` bytes from the code sequence starting a given `pc` position.
+@[simp]
 def EvmCode.slice(st:EvmCode)(pc:Nat)(n:Nat)(p:n≤32) : Bytes32 :=
-  let bytes := st.data.take n
+  let head := (st.splitAt pc).snd
+  let bytes := head.takeD n 0
   -- Prove bytes has at most 32 elements.
-  have q : bytes.length ≤ n := by
-    apply List.length_take_le
+  have q : bytes.length = n := by sorry
   -- Construct FinVec
-  {data:=bytes, isLt:=by exact Nat.le_trans q p}
+  {data:=bytes, isLt:=by exact le_of_eq_of_le q p}
 
 -- Decode the instruction at a given `pc` position within the code sequence.
+@[simp]
 def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
   -- Read opcode
   let opcode := st.read pc;
@@ -74,22 +77,22 @@ def EvmCode.decode (st:EvmCode)(pc:Nat) : Bytecode :=
   -- 50s: Stack, Memory Storage and Flow Operations
   | 0x50 => Bytecode.Pop
   -- 60s & 70s: Push Operations
-  | 0x60 => Bytecode.Push (st.slice pc 1 (by simp_arith))
-  | 0x61 => Bytecode.Push (st.slice pc 2 (by simp_arith))
-  | 0x62 => Bytecode.Push (st.slice pc 3 (by simp_arith))
-  | 0x63 => Bytecode.Push (st.slice pc 4 (by simp_arith))
-  | 0x64 => Bytecode.Push (st.slice pc 5 (by simp_arith))
-  | 0x65 => Bytecode.Push (st.slice pc 6 (by simp_arith))
-  | 0x66 => Bytecode.Push (st.slice pc 7 (by simp_arith))
-  | 0x67 => Bytecode.Push (st.slice pc 8 (by simp_arith))
-  | 0x68 => Bytecode.Push (st.slice pc 9 (by simp_arith))
-  | 0x69 => Bytecode.Push (st.slice pc 10 (by simp_arith))
-  | 0x6a => Bytecode.Push (st.slice pc 11 (by simp_arith))
-  | 0x6b => Bytecode.Push (st.slice pc 12 (by simp_arith))
-  | 0x6c => Bytecode.Push (st.slice pc 13 (by simp_arith))
-  | 0x6d => Bytecode.Push (st.slice pc 14 (by simp_arith))
-  | 0x6e => Bytecode.Push (st.slice pc 15 (by simp_arith))
-  | 0x6f => Bytecode.Push (st.slice pc 16 (by simp_arith))
+  | 0x60 => Bytecode.Push (st.slice (pc+1) 1 (by simp_arith))
+  | 0x61 => Bytecode.Push (st.slice (pc+1) 2 (by simp_arith))
+  | 0x62 => Bytecode.Push (st.slice (pc+1) 3 (by simp_arith))
+  | 0x63 => Bytecode.Push (st.slice (pc+1) 4 (by simp_arith))
+  | 0x64 => Bytecode.Push (st.slice (pc+1) 5 (by simp_arith))
+  | 0x65 => Bytecode.Push (st.slice (pc+1) 6 (by simp_arith))
+  | 0x66 => Bytecode.Push (st.slice (pc+1) 7 (by simp_arith))
+  | 0x67 => Bytecode.Push (st.slice (pc+1) 8 (by simp_arith))
+  | 0x68 => Bytecode.Push (st.slice (pc+1) 9 (by simp_arith))
+  | 0x69 => Bytecode.Push (st.slice (pc+1) 10 (by simp_arith))
+  | 0x6a => Bytecode.Push (st.slice (pc+1) 11 (by simp_arith))
+  | 0x6b => Bytecode.Push (st.slice (pc+1) 12 (by simp_arith))
+  | 0x6c => Bytecode.Push (st.slice (pc+1) 13 (by simp_arith))
+  | 0x6d => Bytecode.Push (st.slice (pc+1) 14 (by simp_arith))
+  | 0x6e => Bytecode.Push (st.slice (pc+1) 15 (by simp_arith))
+  | 0x6f => Bytecode.Push (st.slice (pc+1) 16 (by simp_arith))
   -- 80s: Duplication Operations
   | 0x80 => Bytecode.Dup {val:=0, isLt:=(by simp_arith)}
   | 0x81 => Bytecode.Dup {val:=1, isLt:=(by simp_arith)}
@@ -182,3 +185,23 @@ inductive Outcome where
   match out with
   | Outcome.Ok evm => (fn evm)
   | _ => out
+
+/- =============================================================== -/
+/- Tests -/
+/- =============================================================== -/
+
+example : (EvmCode.decode [0x00] 0) = Bytecode.Stop :=
+by
+  rfl
+
+example : (EvmCode.decode [0x00,0x01] 1) = Bytecode.Add :=
+by
+  rfl
+
+example : (EvmCode.decode [0x60,0xf5] 0) = Bytecode.Push {data:=[0xf5],isLt:=by simp} :=
+by
+  rfl
+
+example : (EvmCode.decode [0x61,0xf5] 0) = Bytecode.Push {data:=[0xf5,00],isLt:=by simp} :=
+by
+  rfl
